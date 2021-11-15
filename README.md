@@ -1,5 +1,5 @@
 # Salary Manager
-___
+
 ## Methods:
 
 | Method | URI | Description |
