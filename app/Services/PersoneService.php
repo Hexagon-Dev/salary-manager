@@ -5,9 +5,7 @@ namespace App\Services;
 use App\Contracts\Services\PersoneServiceInterface;
 use App\Models\Persone;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class PersoneService implements PersoneServiceInterface
 {

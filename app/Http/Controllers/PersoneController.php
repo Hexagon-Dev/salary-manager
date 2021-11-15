@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Contracts\Services\PersoneServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Persone;
 use Illuminate\Http\Response;
 
 class PersoneController extends Controller
