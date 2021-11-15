@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\PersoneController;
+use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,8 +15,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('persone', [PersoneController::class, 'index']);
-Route::post('persone', [PersoneController::class, 'create']);
-Route::get('persone/{persone}', [PersoneController::class, 'show']);
-Route::put('persone/{persone}', [PersoneController::class, 'update']);
-Route::delete('persone/{persone}', [PersoneController::class, 'delete']);
+Route::prefix('user')->group(function () {
+    Route::get('', [UserController::class, 'index']);
+    Route::post('', [UserController::class, 'create']);
+    Route::get('/{user}', [UserController::class, 'show']);
+    Route::put('/{user}', [UserController::class, 'update']);
+    Route::delete('/{user}', [UserController::class, 'delete']);
+});
+
+Route::prefix('absence')->group(function () {
+    Route::get('', [AbsenceController::class, 'index']);
+    Route::post('', [AbsenceController::class, 'create']);
+    Route::get('/{absence}', [AbsenceController::class, 'show']);
+    Route::put('/{absence}', [AbsenceController::class, 'update']);
+    Route::delete('/{absence}', [AbsenceController::class, 'delete']);
+});

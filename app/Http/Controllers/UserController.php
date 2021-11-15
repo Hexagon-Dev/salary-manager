@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Services\PersoneServiceInterface;
+use App\Contracts\Services\UserServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class PersoneController extends Controller
+class UserController extends Controller
 {
-    protected PersoneServiceInterface $service;
+    protected UserServiceInterface $service;
 
     /**
-     * @param PersoneServiceInterface $personeService
+     * @param UserServiceInterface $personeService
      */
-    public function __construct(PersoneServiceInterface $personeService)
+    public function __construct(UserServiceInterface $personeService)
     {
         $this->service = $personeService;
     }
@@ -34,6 +34,8 @@ class PersoneController extends Controller
     public function create(Request $request): JsonResponse
     {
         $request->validate([
+            'login' => 'required|max:32|min: 6',
+            'password' => 'required|max:32|min: 8',
             'name' => 'max:255',
             'age' => 'max:45',
             'role' => 'max:45',

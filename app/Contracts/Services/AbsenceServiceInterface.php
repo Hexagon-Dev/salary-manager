@@ -5,7 +5,7 @@ namespace App\Contracts\Services;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Collection;
 
-interface PersoneServiceInterface
+interface AbsenceServiceInterface
 {
     /**
      * @return Collection

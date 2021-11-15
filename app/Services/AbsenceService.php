@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
-use App\Contracts\Services\PersoneServiceInterface;
-use App\Models\Persone;
+use App\Contracts\Services\AbsenceServiceInterface;
+use App\Models\Absence;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
-class PersoneService implements PersoneServiceInterface
+class AbsenceService implements AbsenceServiceInterface
 {
     /**
      * @return Collection
      */
     public function index(): Collection
     {
-        return Persone::all();
+        return Absence::all();
     }
 
     /**
@@ -23,7 +23,7 @@ class PersoneService implements PersoneServiceInterface
      */
     public function create(Request $request): Collection
     {
-        return Collection::make(Persone::query()->create($request->all())->toArray());
+        return Collection::make(Absence::query()->create($request->all())->toArray());
     }
 
     /**
@@ -32,7 +32,7 @@ class PersoneService implements PersoneServiceInterface
      */
     public function show(int $id): Collection
     {
-        return Collection::make(Persone::query()->find($id));
+        return Collection::make(Absence::query()->find($id));
     }
 
     /**
@@ -42,7 +42,7 @@ class PersoneService implements PersoneServiceInterface
      */
     public function update(Request $request, int $id): Collection
     {
-        $article = Persone::query()->findOrFail($id);
+        $article = Absence::query()->findOrFail($id);
         $article->update($request->all());
 
         return Collection::make($article);
@@ -54,7 +54,7 @@ class PersoneService implements PersoneServiceInterface
      */
     public function delete(int $id): int
     {
-        $article = Persone::query()->findOrFail($id);
+        $article = Absence::query()->findOrFail($id);
         $article->delete();
 
         return 200;
