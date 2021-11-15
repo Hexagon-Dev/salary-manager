@@ -6,6 +6,8 @@ use App\Contracts\Services\UserServiceInterface;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserService implements UserServiceInterface
 {
@@ -23,14 +25,8 @@ class UserService implements UserServiceInterface
      */
     public function create(Request $request): Collection
     {
-        $input = $request->collect();
-        $password = bcrypt($request->input('password'));
-        $input = $input->merge(['password' => $password]);
-
-        $credentials = $input->only('login', 'password')->toArray();
-
-        $token = auth()->attempt($credentials);
-
+        $token = JWTAuth::attempt($request->only('login', 'password'));
+        dd($token);
         return Collection::make(User::query()->create($input->toArray())->toArray());
     }
 
