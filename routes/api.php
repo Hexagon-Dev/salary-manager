@@ -15,4 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::resource('persone', PersoneController::class);
+Route::get('persone', [PersoneController::class, 'index']);
+Route::post('persone', [PersoneController::class, 'create']);
+Route::get('persone/{persone}', [PersoneController::class, 'show']);
+Route::put('persone/{persone}', [PersoneController::class, 'update']);
+Route::delete('persone/{persone}', [PersoneController::class, 'delete']);
