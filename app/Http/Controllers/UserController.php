@@ -12,20 +12,19 @@ class UserController extends Controller
     protected UserServiceInterface $service;
 
     /**
-     * @param UserServiceInterface $personeService
+     * @param UserServiceInterface $service
      */
-    public function __construct(UserServiceInterface $personeService)
+    public function __construct(UserServiceInterface $service)
     {
-        $this->service = $personeService;
+        $this->service = $service;
     }
 
     /**
-     * @param Request $request
      * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-        return response()->json($this->service->index($request));
+        return response()->json($this->service->index());
     }
 
     /**
@@ -34,7 +33,7 @@ class UserController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
-        return response()->json($this->service->login($request));
+        return response()->json($this->service->login($request->toArray()));
     }
 
     /**
@@ -51,16 +50,16 @@ class UserController extends Controller
             'role' => 'max:45',
         ]);
 
-        return response()->json($this->service->create($request));
+        return response()->json($this->service->create($request->all()));
     }
 
     /**
      * @param int $id
      * @return JsonResponse
      */
-    public function show(int $id): JsonResponse
+    public function show(string $login): JsonResponse
     {
-        return response()->json($this->service->show($id));
+        return response()->json($this->service->show($login));
     }
 
     /**

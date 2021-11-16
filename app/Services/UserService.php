@@ -4,39 +4,52 @@ namespace App\Services;
 
 use App\Contracts\Services\UserServiceInterface;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Spatie\Permission\Models\Permission;
 
 class UserService implements UserServiceInterface
 {
+    public ?Authenticatable $user;
+
+    /**
+     * @param Authenticatable $user
+     */
+    public function __construct(Authenticatable $user)
+    {
+        $this->user = $user;
+    }
+
+    public function setUser(Authenticatable $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
 
     /**
      * @return Collection
      */
     public function index(): Collection
     {
+        $this->user->can('view');
         return User::all();
     }
 
     /**
-     * @param Request $request
+     * @param array $attributes
      * @return Collection
      */
-    public function create(Request $request): Collection
+    public function create(array $attributes): Collection
     {
-        if (!User::can('create')) {
-            return Collection::make(['error' => 'access_denied']);
-        }
+        $this->user->can('create');
 
-        if (User::get()->where('login', $request->login)->first()) {
+        if (User::get()->where('login', $attributes['login'])->first()) {
             return Collection::make(['error' => 'user_exists']);
         }
 
-        $user = User::query()->make($request->all());
+        $user = User::query()->make($attributes);
         $user->password = Hash::make($user->password);
         $user->assignRole(Role::findByName('user'));
         $user->create($user->attributesToArray());
@@ -45,50 +58,42 @@ class UserService implements UserServiceInterface
     }
 
     /**
-     * @param Request $request
+     * @param string $login
      * @return Collection
      */
-    public function login(Request $request): Collection
+    public function show(string $login): Collection
     {
-        $user = User::get()->where('login', $request->login)->first();
-        if (Hash::check($request->password, $user->password)) {
-            return Collection::make(['token' => JWTAuth::fromUser($user)]);
-        }
+        $this->user->can('view');
 
-        return Collection::make(['error' => 'invalid_password']);
+        return Collection::make(User::query()->get()->where('login', $login)->first()->toArray());
+    }
+
+    /**
+     * @param array $attributes
+     * @param int $id
+     * @return Collection
+     */
+    public function update(array $attributes, int $id): Collection
+    {
+        $this->user->can('edit');
+
+        $user = User::query()->findOrFail($id);
+        $user->update($attributes->all());
+
+        return Collection::make($user);
     }
 
     /**
      * @param int $id
      * @return Collection
      */
-    public function show(int $id): Collection
+    public function delete(int $id): Collection
     {
-        return Collection::make(User::query()->find($id));
-    }
+        $this->user->can('delete');
 
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return Collection
-     */
-    public function update(Request $request, int $id): Collection
-    {
-        $article = User::query()->findOrFail($id);
-        $article->update($request->all());
-
-        return Collection::make($article);
-    }
-
-    /**
-     * @param int $id
-     * @return int
-     */
-    public function delete(int $id): int
-    {
         $article = User::query()->findOrFail($id);
         $article->delete();
 
-        return 200;
+        return Collection::make(['message' => 'user_deleted']);
     }
 }

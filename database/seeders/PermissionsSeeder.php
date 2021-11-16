@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -20,43 +21,59 @@ class PermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // create permissions
+        // Basic permissions
         Permission::create(['name' => 'edit']);
         Permission::create(['name' => 'delete']);
         Permission::create(['name' => 'view']);
         Permission::create(['name' => 'create']);
 
-        Permission::create(['name' => 'users']);
+        // Table access permissions
+        $tables = [
+            'users',
+            'absences',
+            'skills',
+            'companies',
+            'salaries',
+            'currencies',
+            'currency_records',
+            'notes',
+            'roles',
+            'permissions',
+            ];
+
+        foreach ($tables as $table) {
+            Permission::create(['name' => $table]);
+        }
 
         // create roles and assign existing permissions
-        $role1 = Role::create(['name' => 'user']);
-        $role1->givePermissionTo('view entry');
-        $role1->givePermissionTo('create entry');
+        $user_role = Role::create(['name' => 'user']);
+        $user_role->givePermissionTo(['users', 'view', 'create']);
 
-        $role2 = Role::create(['name' => 'admin']);
-        $role2->givePermissionTo('view entry');
-        $role2->givePermissionTo('create entry');
-        $role2->givePermissionTo('edit entry');
+        $admin_role = Role::create(['name' => 'admin']);
+        $admin_role->givePermissionTo(['users', 'view', 'create', 'edit']);
 
-        $role3 = Role::create(['name' => 'super-admin']);
+        $super_admin_role = Role::create(['name' => 'super-admin']);
         // gets all permissions via Gate::before rule; see AuthServiceProvider
 
         $user = User::factory()->create([
-            'login' => 'User',
-            'email' => 'test@example.com',
+            'login' => 'user',
+            'email' => 'user@example.com',
+            'password' => Hash::make('user'),
         ]);
-        $user->assignRole($role1);
-
-        $user = \App\Models\User::factory()->create([
-            'login' => 'Admin',
-            'email' => 'admin@example.com',
-        ]);
-        $user->assignRole($role2);
+        $user->assignRole($user_role);
 
         $user = User::factory()->create([
-            'login' => 'SuperAdmin',
-            'email' => 'superadmin@example.com',
+            'login' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('admin'),
         ]);
-        $user->assignRole($role3);
+        $user->assignRole($admin_role);
+
+        $user = User::factory()->create([
+            'login' => 'super-admin',
+            'email' => 'superadmin@example.com',
+            'password' => Hash::make('super-admin'),
+        ]);
+        $user->assignRole($super_admin_role);
     }
 }

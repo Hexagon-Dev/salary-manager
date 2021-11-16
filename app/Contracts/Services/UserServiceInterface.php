@@ -2,12 +2,17 @@
 
 namespace App\Contracts\Services;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Collection;
 
 interface UserServiceInterface
 {
+
+    /**
+     * @param Authenticatable $user
+     * @return self
+     */
+    public function setUser(Authenticatable $user): self;
 
     /**
      * @return Collection
@@ -15,33 +20,27 @@ interface UserServiceInterface
     public function index(): Collection;
 
     /**
-     * @param Request $request
+     * @param array $attributes
      * @return Collection
      */
-    public function login(Request $request): Collection;
-
-    /**
-     * @param Request $request
-     * @return Collection
-     */
-    public function create(Request $request): Collection;
+    public function create(array $attributes): Collection;
 
     /**
      * @param int $id
      * @return Collection
      */
-    public function show(int $id): Collection;
+    public function show(string $login): Collection;
 
     /**
-     * @param Request $request
+     * @param array $attributes
      * @param int $id
      * @return Collection
      */
-    public function update(Request $request, int $id): Collection;
+    public function update(array $attributes, int $id): Collection;
 
     /**
      * @param int $id
-     * @return int
+     * @return Collection
      */
-    public function delete(int $id): int;
+    public function delete(int $id): Collection;
 }

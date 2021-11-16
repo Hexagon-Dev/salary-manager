@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Support\Facades\Route;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,15 +17,24 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 |
 */
 
-Route::post('/login', [UserController::class, 'login']);
+Route::group(['prefix' => 'auth'], function () {
+
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
+
+});
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
-    Route::prefix('user')->group(function () {
-        Route::get('', [UserController::class, 'index']);
-        Route::post('', [UserController::class, 'create']);
-        Route::get('/{user}', [UserController::class, 'show']);
-        Route::put('/{user}', [UserController::class, 'update']);
-        Route::delete('/{user}', [UserController::class, 'delete']);
+    Route::group(['middleware' => ['can:users']], function () {
+        Route::prefix('user')->group(function () {
+            Route::get('', [UserController::class, 'index']);
+            Route::post('', [UserController::class, 'create']);
+            Route::get('/{user}', [UserController::class, 'show']);
+            Route::put('/{user}', [UserController::class, 'update']);
+            Route::delete('/{user}', [UserController::class, 'delete']);
+        });
     });
 
     Route::prefix('absence')->group(function () {
