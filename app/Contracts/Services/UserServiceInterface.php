@@ -2,15 +2,23 @@
 
 namespace App\Contracts\Services;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Collection;
 
 interface UserServiceInterface
 {
+
     /**
      * @return Collection
      */
     public function index(): Collection;
+
+    /**
+     * @param Request $request
+     * @return Collection
+     */
+    public function login(Request $request): Collection;
 
     /**
      * @param Request $request

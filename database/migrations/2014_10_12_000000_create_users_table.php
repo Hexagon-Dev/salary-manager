@@ -18,11 +18,14 @@ class CreateUsersTable extends Migration
             $table->timestamps();
             $table->string('login');
             $table->string('password');
-            $table->string('name');
-            $table->string('age');
-            $table->integer('role');
-            $table->integer('name_on_project');
-            $table->integer('english_lvl');
+            $table->string('email');
+            $table->string('email_verified_at')->default(now());
+            $table->rememberToken();
+            $table->string('name')->nullable();
+            $table->string('age')->nullable();
+            $table->integer('role')->nullable();
+            $table->integer('name_on_project')->nullable();
+            $table->integer('english_lvl')->nullable();
         });
     }
 
