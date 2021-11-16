@@ -31,15 +31,6 @@ class UserController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function login(Request $request): JsonResponse
-    {
-        return response()->json($this->service->login($request->toArray()));
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function create(Request $request): JsonResponse
     {
         $request->validate([
@@ -54,7 +45,7 @@ class UserController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param string $login
      * @return JsonResponse
      */
     public function show(string $login): JsonResponse
@@ -75,7 +66,7 @@ class UserController extends Controller
             'role' => 'max:45',
         ]);
 
-        return response()->json($this->service->update($request, $id));
+        return response()->json($this->service->update($request->toArray(), $id));
     }
 
     /**

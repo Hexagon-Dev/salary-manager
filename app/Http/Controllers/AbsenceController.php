@@ -9,15 +9,6 @@ use Illuminate\Http\Response;
 
 class AbsenceController extends Controller
 {
-    protected AbsenceServiceInterface $service;
-
-    /**
-     * @param AbsenceServiceInterface $absenceService
-     */
-    public function __construct(AbsenceServiceInterface $absenceService)
-    {
-        $this->service = $absenceService;
-    }
 
     /**
      * @return JsonResponse

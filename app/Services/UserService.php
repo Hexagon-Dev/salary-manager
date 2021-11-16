@@ -13,12 +13,9 @@ class UserService implements UserServiceInterface
 {
     public ?Authenticatable $user;
 
-    /**
-     * @param Authenticatable $user
-     */
-    public function __construct(Authenticatable $user)
+    public function __construct()
     {
-        $this->user = $user;
+        $this->user = auth()->user();
     }
 
     public function setUser(Authenticatable $user): self
@@ -78,7 +75,7 @@ class UserService implements UserServiceInterface
         $this->user->can('edit');
 
         $user = User::query()->findOrFail($id);
-        $user->update($attributes->all());
+        $user->update($attributes);
 
         return Collection::make($user);
     }
