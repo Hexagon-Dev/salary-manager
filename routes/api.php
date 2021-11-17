@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['prefix' => 'auth'], function () {
+Route::prefix('auth')->group(function () {
 
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);
@@ -27,21 +27,18 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
-    Route::group(['middleware' => ['can:users']], function () {
-        Route::prefix('user')->group(function () {
-            Route::get('', [UserController::class, 'index']);
-            Route::post('', [UserController::class, 'create']);
-            Route::get('/{user}', [UserController::class, 'show']);
-            Route::put('/{user}', [UserController::class, 'update']);
-            Route::delete('/{user}', [UserController::class, 'delete']);
-        });
+    Route::prefix('user')->group(function () {
+        Route::post('', [UserController::class, 'create']);
+        Route::get('', [UserController::class, 'readAll']);
+        Route::get('/{user}', [UserController::class, 'readOne']);
+        Route::patch('/{user}', [UserController::class, 'update']);
+        Route::delete('/{user}', [UserController::class, 'delete']);
     });
-
     Route::prefix('absence')->group(function () {
-        Route::get('', [AbsenceController::class, 'index']);
         Route::post('', [AbsenceController::class, 'create']);
-        Route::get('/{absence}', [AbsenceController::class, 'show']);
-        Route::put('/{absence}', [AbsenceController::class, 'update']);
+        Route::get('', [AbsenceController::class, 'readAll']);
+        Route::get('/{absence}', [AbsenceController::class, 'readOne']);
+        Route::patch('/{absence}', [AbsenceController::class, 'update']);
         Route::delete('/{absence}', [AbsenceController::class, 'delete']);
     });
 });

@@ -22,23 +22,24 @@ class PermissionsSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Basic permissions
-        Permission::create(['name' => 'edit']);
-        Permission::create(['name' => 'delete']);
-        Permission::create(['name' => 'view']);
         Permission::create(['name' => 'create']);
+        Permission::create(['name' => 'read']);
+        Permission::create(['name' => 'update']);
+        Permission::create(['name' => 'delete']);
+
 
         // Table access permissions
         $tables = [
-            'users',
-            'absences',
-            'skills',
-            'companies',
-            'salaries',
-            'currencies',
-            'currency_records',
-            'notes',
-            'roles',
-            'permissions',
+            'user',
+            'absence',
+            'skill',
+            'company',
+            'salary',
+            'currency',
+            'currency_record',
+            'note',
+            'role',
+            'permission',
             ];
 
         foreach ($tables as $table) {
@@ -47,13 +48,13 @@ class PermissionsSeeder extends Seeder
 
         // create roles and assign existing permissions
         $user_role = Role::create(['name' => 'user']);
-        $user_role->givePermissionTo(['users', 'view', 'create']);
+        $user_role->givePermissionTo(['user', 'read', 'create']);
 
         $admin_role = Role::create(['name' => 'admin']);
-        $admin_role->givePermissionTo(['users', 'view', 'create', 'edit']);
+        $admin_role->givePermissionTo(['user', 'absence', 'read', 'create', 'update']);
 
         $super_admin_role = Role::create(['name' => 'super-admin']);
-        // gets all permissions via Gate::before rule; see AuthServiceProvider
+        $super_admin_role->givePermissionTo(['user', 'absence', 'read', 'create', 'update', 'delete']);
 
         $user = User::factory()->create([
             'login' => 'user',

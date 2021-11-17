@@ -2,22 +2,15 @@
 
 namespace App\Contracts\Services;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 
 interface UserServiceInterface
 {
 
     /**
-     * @param Authenticatable $user
-     * @return self
-     */
-    public function setUser(Authenticatable $user): self;
-
-    /**
      * @return Collection
      */
-    public function index(): Collection;
+    public function readAll(): Collection;
 
     /**
      * @param array $attributes
@@ -26,21 +19,21 @@ interface UserServiceInterface
     public function create(array $attributes): Collection;
 
     /**
-     * @param int $id
+     * @param string $login
      * @return Collection
      */
-    public function show(string $login): Collection;
+    public function readOne(string $login): Collection;
 
     /**
      * @param array $attributes
-     * @param int $id
+     * @param string $login
      * @return Collection
      */
-    public function update(array $attributes, int $id): Collection;
+    public function update(array $attributes, string $login): Collection;
 
     /**
-     * @param int $id
+     * @param string $login
      * @return Collection
      */
-    public function delete(int $id): Collection;
+    public function delete(string $login): Collection;
 }

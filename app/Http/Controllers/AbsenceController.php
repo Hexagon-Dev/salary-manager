@@ -2,56 +2,89 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Services\AbsenceServiceInterface;
+use App\Models\Absence;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class AbsenceController extends Controller
 {
+    protected ?Authenticatable $user;
 
-    /**
-     * @return JsonResponse
-     */
-    public function index(): JsonResponse
+    public function __construct(/*Authenticatable $user*/)
     {
-        return response()->json($this->service->index());
+        //$this->user = $user;
+        $this->user = auth()->user();
     }
 
     /**
-     * @param Request $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function readAll(): JsonResponse
     {
-        return response()->json($this->service->create($request));
-    }
+        if (!$this->user->can(['read', 'absence'])) {
+            return response()->json(['error' => 'access_denied']);
+        }
 
-    /**
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function show(int $id): JsonResponse
-    {
-        return response()->json($this->service->show($id));
-    }
-
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function update(Request $request, int $id): JsonResponse
-    {
-        return response()->json($this->service->update($request, $id));
+        return response()->json(Absence::query()->get()->toArray());
     }
 
     /**
      * @param int $id
-     * @return Response
+     * @return JsonResponse
      */
-    public function delete(int $id): Response
+    public function readOne(int $id): JsonResponse
     {
-        return Response('', $this->service->delete($id));
+        if (!$this->user->can(['read', 'absence'])) {
+            return response()->json(['error' => 'access_denied']);
+        }
+
+        return response()->json(Absence::query()->get()->where($id)->first()->toArray());
+    }
+
+    /**
+     * @param array $attributes
+     * @return JsonResponse
+     */
+    public function create(array $attributes): JsonResponse
+    {
+        if (!$this->user->can(['create', 'absence'])) {
+            return response()->json(['error' => 'access_denied']);
+        }
+
+        $absence = Absence::query()->create($attributes);
+        return response()->json($absence);
+    }
+
+    /**
+     * @param array $attributes
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function update(array $attributes, int $id): JsonResponse
+    {
+        if (!$this->user->can(['update', 'absence'])) {
+            return response()->json(['error' => 'access_denied']);
+        }
+
+        $absence = Absence::query()->findOrFail($id);
+        $absence->update($attributes);
+        dd($absence);
+        return response()->json($absence);
+    }
+
+    /**
+     * @param  int  $id
+     * @return JsonResponse
+     */
+    public function delete($id): JsonResponse
+    {
+        if (!$this->user->can(['delete', 'absence'])) {
+            return response()->json(['error' => 'access_denied']);
+        }
+
+        $absence = Absence::query()->findOrFail($id);
+        $absence->delete();
+
+        return response()->json(['message' => 'deleted']);
     }
 }

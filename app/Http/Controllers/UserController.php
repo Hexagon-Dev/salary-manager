@@ -22,9 +22,9 @@ class UserController extends Controller
     /**
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function readAll(): JsonResponse
     {
-        return response()->json($this->service->index());
+        return response()->json($this->service->readAll());
     }
 
     /**
@@ -48,9 +48,9 @@ class UserController extends Controller
      * @param string $login
      * @return JsonResponse
      */
-    public function show(string $login): JsonResponse
+    public function readOne(string $login): JsonResponse
     {
-        return response()->json($this->service->show($login));
+        return response()->json($this->service->readOne($login));
     }
 
     /**
@@ -58,7 +58,7 @@ class UserController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, string $login): JsonResponse
     {
         $request->validate([
             'name' => 'max:255',
@@ -66,15 +66,15 @@ class UserController extends Controller
             'role' => 'max:45',
         ]);
 
-        return response()->json($this->service->update($request->toArray(), $id));
+        return response()->json($this->service->update($request->toArray(), $login));
     }
 
     /**
-     * @param int $id
-     * @return Response
+     * @param string $login
+     * @return JsonResponse
      */
-    public function delete(int $id): Response
+    public function delete(string $login): JsonResponse
     {
-        return Response('', $this->service->delete($id));
+        return response()->json($this->service->delete($login));
     }
 }
