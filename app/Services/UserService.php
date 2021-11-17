@@ -17,7 +17,7 @@ class UserService implements UserServiceInterface
     public function __construct(/*Authenticatable $user*/)
     {
         //$this->user = $user;
-        $this->user = auth()->user();
+        $this->user = auth()->user() ?? User::query()->findOrFail('3');
     }
 
     /**

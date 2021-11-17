@@ -17,6 +17,8 @@ class UserTest extends TestCase
             'mail' => 'superadmin@example.com',
             'password' => 'superadmin'
         ]);
+        $token = JWTAuth::fromUser($user);
+        $this->withToken($token);
 
         $response = $this->json('GET', '/api/user');
 
@@ -33,7 +35,8 @@ class UserTest extends TestCase
             'password' => 'superadmin'
         ]);
 
-        $this->be($user);
+        $token = JWTAuth::fromUser($user);
+        $this->withToken($token);
 
         $response = $this->json('GET', '/api/user', ['login' => 'user']);
 
@@ -50,10 +53,11 @@ class UserTest extends TestCase
             'password' => 'superadmin'
         ]);
 
-        $this->be($user);
+        $token = JWTAuth::fromUser($user);
+        $this->withToken($token);
 
         $response = $this->json('POST', '/api/user', [
-            'login' => 'test',
+            'login' => 'test_name',
             'password' => 'testtest',
             'email' => 'test@test.com',
             'name' => 'test',
@@ -65,7 +69,7 @@ class UserTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJson([
-                'login' => 'test',
+                'login' => 'test_name',
                 'password' => 'testtest',
                 'email' => 'test@test.com',
                 'name' => 'test',
@@ -73,5 +77,35 @@ class UserTest extends TestCase
                 'name_on_project' => 4,
                 'english_lvl' => 5,
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function delete()
+    {
+        $user = new User([
+            'mail' => 'superadmin@example.com',
+            'password' => 'superadmin'
+        ]);
+
+        $token = JWTAuth::fromUser($user);
+        $this->withToken($token);
+
+        $userData = [
+            'login' => 'test_name',
+            'password' => 'testtest',
+            'email' => 'test@test.com',
+            'name' => 'test',
+            'age' => '20',
+            'name_on_project' => 4,
+            'english_lvl' => 5,
+        ];
+
+        $this->json('POST', '/api/user', $userData);
+
+        $response = $this->json('DELETE', 'api/user' . $userData['login']);
+
+        $response->assertStatus(200);
     }
 }

@@ -3,7 +3,8 @@
 namespace Tests\Unit;
 
 use App\Models\User;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TokenRefreshTest extends TestCase
 {
@@ -17,7 +18,8 @@ class TokenRefreshTest extends TestCase
             'password' => 'superadmin'
         ]);
 
-        $this->actingAs($user);
+        $token = JWTAuth::fromUser($user);
+        $this->withToken($token);
 
         $response = $this->json('POST', '/api/auth/refresh', []);
 

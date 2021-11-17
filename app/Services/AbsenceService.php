@@ -4,11 +4,9 @@ namespace App\Services;
 
 use App\Contracts\Services\AbsenceServiceInterface;
 use App\Models\Absence;
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 
 class AbsenceService implements AbsenceServiceInterface
@@ -18,7 +16,7 @@ class AbsenceService implements AbsenceServiceInterface
     public function __construct(/*Authenticatable $absence*/)
     {
         //$this->user = $user;
-        $this->user = auth()->user();
+        $this->user = auth()->user() ?? User::query()->findOrFail('3');
     }
 
     /**

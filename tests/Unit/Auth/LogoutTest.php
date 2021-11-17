@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\User;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LogoutTest extends TestCase
@@ -18,7 +18,8 @@ class LogoutTest extends TestCase
             'password' => 'superadmin'
         ]);
 
-        $this->actingAs($user);
+        $token = JWTAuth::fromUser($user);
+        $this->withToken($token);
 
         $response = $this->json('POST', '/api/auth/logout', []);
 

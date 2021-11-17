@@ -20,9 +20,8 @@ abstract class TestCase extends BaseTestCase
     public function actingAs(Authenticatable $user, $driver = null)
     {
         $token = JWTAuth::fromUser($user);
-        $this->withHeader('Authorization', "Bearer {$token}");
+        $this->withToken($token);
         parent::actingAs($user);
-
         return $this;
     }
 }
