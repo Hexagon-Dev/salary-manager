@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -56,33 +57,29 @@ class UserTest extends TestCase
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);
 
-        $response = $this->json('POST', '/api/user', [
+        $userData = [
             'login' => 'test_name',
-            'password' => 'testtest',
+            'password' => 'test_password',
             'email' => 'test@test.com',
             'name' => 'test',
             'age' => '20',
-            'name_on_project' => 4,
-            'english_lvl' => 5,
-        ]);
+            'name_on_project' => '4',
+            'english_lvl' => '5',
+        ];
+
+        $response = $this->json('POST', '/api/user', $userData);
+
+        $userData = collect($userData)->except('password')->toArray();
 
         $response
             ->assertStatus(200)
-            ->assertJson([
-                'login' => 'test_name',
-                'password' => 'testtest',
-                'email' => 'test@test.com',
-                'name' => 'test',
-                'age' => '20',
-                'name_on_project' => 4,
-                'english_lvl' => 5,
-            ]);
+            ->assertJson($userData);
     }
 
     /**
      * @test
      */
-    public function delete()
+    public function deleteUser(): void
     {
         $user = new User([
             'mail' => 'superadmin@example.com',

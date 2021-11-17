@@ -57,20 +57,15 @@ class AbsenceTest extends TestCase
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);
 
-        $response = $this->json('POST', '/api/absence', [
-            'created_at' => Timestamp::now(),
-            'updated_at' => Timestamp::now(),
+        $absenceData = [
             'type' => 1,
             'persone_id' => 2,
-        ]);
+        ];
+
+        $response = $this->json('POST', '/api/absence', $absenceData);
 
         $response
             ->assertStatus(200)
-            ->assertJson([
-                'created_at' => Timestamp::now(),
-                'updated_at' => Timestamp::now(),
-                'type' => 1,
-                'persone_id' => 2,
-            ]);
+            ->assertJson($absenceData);
     }
 }
