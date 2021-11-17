@@ -47,6 +47,8 @@ class PermissionsSeeder extends Seeder
         }
 
         // create roles and assign existing permissions
+        $guest_role = Role::create(['name' => 'guest']);
+
         $user_role = Role::create(['name' => 'user']);
         $user_role->givePermissionTo(['user', 'read', 'create']);
 
@@ -55,6 +57,13 @@ class PermissionsSeeder extends Seeder
 
         $super_admin_role = Role::create(['name' => 'super-admin']);
         $super_admin_role->givePermissionTo(['user', 'absence', 'read', 'create', 'update', 'delete']);
+
+        $user = User::factory()->create([
+            'login' => 'guest',
+            'email' => 'guest@example.com',
+            'password' => Hash::make('guest'),
+        ]);
+        $user->assignRole($guest_role);
 
         $user = User::factory()->create([
             'login' => 'user',
@@ -71,9 +80,9 @@ class PermissionsSeeder extends Seeder
         $user->assignRole($admin_role);
 
         $user = User::factory()->create([
-            'login' => 'super-admin',
+            'login' => 'superadmin',
             'email' => 'superadmin@example.com',
-            'password' => Hash::make('super-admin'),
+            'password' => Hash::make('superadmin'),
         ]);
         $user->assignRole($super_admin_role);
     }

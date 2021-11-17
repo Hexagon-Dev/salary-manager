@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Contracts\Services\UserServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
@@ -24,7 +23,9 @@ class UserController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        return response()->json($this->service->readAll());
+        $collection = $this->service->readAll();
+
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
@@ -41,7 +42,9 @@ class UserController extends Controller
             'role' => 'max:45',
         ]);
 
-        return response()->json($this->service->create($request->all()));
+        $collection = $this->service->create($request->toArray());
+
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
@@ -50,12 +53,14 @@ class UserController extends Controller
      */
     public function readOne(string $login): JsonResponse
     {
-        return response()->json($this->service->readOne($login));
+        $collection = $this->service->readOne($login);
+
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
      * @param Request $request
-     * @param int $id
+     * @param string $login
      * @return JsonResponse
      */
     public function update(Request $request, string $login): JsonResponse
@@ -66,7 +71,9 @@ class UserController extends Controller
             'role' => 'max:45',
         ]);
 
-        return response()->json($this->service->update($request->toArray(), $login));
+        $collection = $this->service->update($request->toArray(), $login);
+
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
@@ -75,6 +82,8 @@ class UserController extends Controller
      */
     public function delete(string $login): JsonResponse
     {
-        return response()->json($this->service->delete($login));
+        $collection = $this->service->delete($login);
+
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 }

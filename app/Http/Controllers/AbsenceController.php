@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\AbsenceServiceInterface;
 use App\Models\Absence;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AbsenceController extends Controller
 {
-    protected ?Authenticatable $user;
+    protected AbsenceServiceInterface $service;
 
-    public function __construct(/*Authenticatable $user*/)
+    /**
+     * @param AbsenceServiceInterface $service
+     */
+    public function __construct(AbsenceServiceInterface $service)
     {
-        //$this->user = $user;
-        $this->user = auth()->user();
+        $this->service = $service;
     }
 
     /**
@@ -21,70 +24,63 @@ class AbsenceController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
-            return response()->json(['error' => 'access_denied']);
-        }
+        $collection = $this->service->readAll();
 
-        return response()->json(Absence::query()->get()->toArray());
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
-     * @param int $id
+     * @param Request $request
      * @return JsonResponse
      */
-    public function readOne(int $id): JsonResponse
+    public function create(Request $request): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
-            return response()->json(['error' => 'access_denied']);
-        }
+        $request->validate([
+            'type' => 'int',
+            'persone_id' => 'int',
+        ]);
 
-        return response()->json(Absence::query()->get()->where($id)->first()->toArray());
+        $collection = $this->service->create($request->toArray());
+
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
-     * @param array $attributes
+     * @param string $login
      * @return JsonResponse
      */
-    public function create(array $attributes): JsonResponse
+    public function readOne(string $login): JsonResponse
     {
-        if (!$this->user->can(['create', 'absence'])) {
-            return response()->json(['error' => 'access_denied']);
-        }
+        $collection = $this->service->readOne($login);
 
-        $absence = Absence::query()->create($attributes);
-        return response()->json($absence);
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
-     * @param array $attributes
-     * @param int $id
+     * @param Request $request
+     * @param string $login
      * @return JsonResponse
      */
-    public function update(array $attributes, int $id): JsonResponse
+    public function update(Request $request, string $login): JsonResponse
     {
-        if (!$this->user->can(['update', 'absence'])) {
-            return response()->json(['error' => 'access_denied']);
-        }
+        $request->validate([
+            'type' => 'int',
+            'persone_id' => 'int',
+        ]);
 
-        $absence = Absence::query()->findOrFail($id);
-        $absence->update($attributes);
-        dd($absence);
-        return response()->json($absence);
+        $collection = $this->service->update($request->toArray(), $login);
+
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 
     /**
-     * @param  int  $id
+     * @param string $login
      * @return JsonResponse
      */
-    public function delete($id): JsonResponse
+    public function delete(string $login): JsonResponse
     {
-        if (!$this->user->can(['delete', 'absence'])) {
-            return response()->json(['error' => 'access_denied']);
-        }
+        $collection = $this->service->delete($login);
 
-        $absence = Absence::query()->findOrFail($id);
-        $absence->delete();
-
-        return response()->json(['message' => 'deleted']);
+        return response()->json($collection->get('message'), $collection->get('status'));
     }
 }

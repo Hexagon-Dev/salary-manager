@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Contracts\Services\UserServiceInterface;
 use App\Models\User;
-use Dflydev\DotAccessData\Data;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserService implements UserServiceInterface
 {
@@ -18,9 +18,6 @@ class UserService implements UserServiceInterface
     {
         //$this->user = $user;
         $this->user = auth()->user();
-        //dd($this->user->getRoleNames()->first());
-        //dd($this->user->getAllPermissions()->toArray());
-        //dd($this->user->can(['delete', 'user']));
     }
 
     /**
@@ -29,10 +26,16 @@ class UserService implements UserServiceInterface
     public function readAll(): Collection
     {
         if (!$this->user->can(['read', 'user'])) {
-            return Collection::make(['error' => 'access_denied']);
+            return Collection::make([
+                'error' => 'access_denied',
+                'status' => Response::HTTP_FORBIDDEN,
+            ]);
         }
 
-        return User::all();
+        return Collection::make([
+            'message' => User::all(),
+            'status' => Response::HTTP_OK,
+        ]);
     }
 
     /**
@@ -42,14 +45,23 @@ class UserService implements UserServiceInterface
     public function readOne(string $login): Collection
     {
         if (!$this->user->can(['read', 'user'])) {
-            return Collection::make(['error' => 'access_denied']);
+            return Collection::make([
+                'message' => 'access_denied',
+                'status' => Response::HTTP_FORBIDDEN,
+            ]);
         }
 
         if (! User::query()->where('login', $login)->first()) {
-            return Collection::make(['error' => 'not_found']);
+            return Collection::make([
+                'message' => 'not_found',
+                'status' => Response::HTTP_NOT_FOUND,
+            ]);
         }
 
-        return Collection::make(User::query()->get()->where('login', $login)->first()->toArray());
+        return Collection::make([
+            'message' => User::query()->get()->where('login', $login)->first()->toArray(),
+            'status' => Response::HTTP_OK,
+        ]);
     }
 
     /**
@@ -59,11 +71,17 @@ class UserService implements UserServiceInterface
     public function create(array $attributes): Collection
     {
         if (!$this->user->can(['create', 'user'])) {
-            return Collection::make(['error' => 'access_denied']);
+            return Collection::make([
+                'message' => 'access_denied',
+                'status' => Response::HTTP_FORBIDDEN,
+            ]);
         }
 
         if (User::get()->where('login', $attributes['login'])->first()) {
-            return Collection::make(['error' => 'user_exists']);
+            return Collection::make([
+                'message' => 'user_exists',
+                'status' => Response::HTTP_NOT_FOUND,
+            ]);
         }
 
         $user = User::query()->make($attributes);
@@ -71,7 +89,10 @@ class UserService implements UserServiceInterface
         $user->assignRole(Role::findByName('user'));
         $user->create($user->attributesToArray());
 
-        return Collection::make($user);
+        return Collection::make([
+            'message' => $user,
+            'status' => Response::HTTP_OK,
+        ]);
     }
 
     /**
@@ -82,16 +103,25 @@ class UserService implements UserServiceInterface
     public function update(array $attributes, string $login): Collection
     {
         if (!$this->user->can(['update', 'user'])) {
-            return Collection::make(['error' => 'access_denied']);
+            return Collection::make([
+                'message' => 'access_denied',
+                'status' => Response::HTTP_FORBIDDEN,
+            ]);
         }
 
         if (! $user = User::query()->where('login', $login)->first()) {
-            return Collection::make(['error' => 'not_found']);
+            return Collection::make([
+                'message' => 'not_found',
+                'status' => Response::HTTP_NOT_FOUND,
+            ]);
         }
 
         $user->update($attributes);
 
-        return Collection::make($user->toArray());
+        return Collection::make([
+            'message' => $user->toArray(),
+            'status' => Response::HTTP_OK,
+        ]);
     }
 
     /**
@@ -101,15 +131,24 @@ class UserService implements UserServiceInterface
     public function delete(string $login): Collection
     {
         if (!$this->user->can(['delete', 'user'])) {
-            return Collection::make(['error' => 'access_denied']);
+            return Collection::make([
+                'message' => 'access_denied',
+                'status' => Response::HTTP_FORBIDDEN,
+            ]);
         }
 
         if (! $user = User::query()->where('login', $login)->first()) {
-            return Collection::make(['error' => 'not_found']);
+            return Collection::make([
+                'message' => 'not_found',
+                'status' => Response::HTTP_NOT_FOUND,
+            ]);
         }
 
         $user->delete();
 
-        return Collection::make(['message' => 'deleted']);
+        return Collection::make([
+            'message' => 'deleted',
+            'status' => Response::HTTP_OK,
+        ]);
     }
 }
