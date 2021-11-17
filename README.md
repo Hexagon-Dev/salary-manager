@@ -10,8 +10,8 @@
 ### Tables:
 | Method | URI | Description |
 |----------------|---------|----------------|
-| GET | api/table_name | Show entries |
-| POST | api/table_name | Create new entry |
-| GET | api/table_name/{user} | Show certain entry |
-| PUT | api/table_name/{user} | Update certain entry values |
-| DELETE | api/table_name/{user} | Remove certain entry |
+| **GET** | api/table_name | Show entries |
+| **POST** | api/table_name | Create new entry |
+| **GET** | api/table_name/{user} | Show certain entry |
+| **PUT** | api/table_name/{user} | Update certain entry values |
+| **DELETE** | api/table_name/{user} | Remove certain entry |
