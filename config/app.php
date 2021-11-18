@@ -182,6 +182,7 @@ return [
         App\Providers\CurrencyRServiceProvider::class,
         App\Providers\NoteServiceProvider::class,
         App\Providers\SalaryServiceProvider::class,
+        App\Providers\SkillServiceProvider::class,
 
     ],
 

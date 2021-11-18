@@ -7,6 +7,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CurrencyRecordController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\SkillController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Support\Facades\Route;
@@ -96,5 +97,14 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::get('/{salary}', [SalaryController::class, 'readOne']);
         Route::patch('/{salary}', [SalaryController::class, 'update']);
         Route::delete('/{salary}', [SalaryController::class, 'delete']);
+    });
+
+    //SKILL
+    Route::prefix('skill')->group(function () {
+        Route::post('', [SkillController::class, 'create']);
+        Route::get('', [SkillController::class, 'readAll']);
+        Route::get('/{skill}', [SkillController::class, 'readOne']);
+        Route::patch('/{skill}', [SkillController::class, 'update']);
+        Route::delete('/{skill}', [SkillController::class, 'delete']);
     });
 });
