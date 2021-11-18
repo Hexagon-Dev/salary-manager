@@ -101,7 +101,7 @@ class UserController extends Controller
     public function delete(string $login): JsonResponse
     {
         $user = $this->service->readOne($login);
-        
+
         /** @var User $user */
         return response()->json(['message' => 'successfully_deleted'], $this->service->delete($user));
     }

@@ -11,12 +11,10 @@ class UserTest extends TestCase
     /**
      * @test
      */
-    public function showAll(): void
+    public function readAll(): void
     {
-        $user = new User([
-            'mail' => 'superadmin@example.com',
-            'password' => 'superadmin'
-        ]);
+        $user = TestHelper::getUser('superadmin');
+
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);
 
@@ -28,12 +26,9 @@ class UserTest extends TestCase
     /**
      * @test
      */
-    public function showOne(): void
+    public function readOne(): void
     {
-        $user = new User([
-            'mail' => 'superadmin@example.com',
-            'password' => 'superadmin'
-        ]);
+        $user = TestHelper::getUser('superadmin');
 
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);
@@ -63,7 +58,7 @@ class UserTest extends TestCase
         $userData = collect($userData)->except('password')->toArray();
 
         $response
-            ->assertStatus(200)
+            ->assertStatus(201)
             ->assertJson($userData);
     }
 
@@ -94,27 +89,22 @@ class UserTest extends TestCase
      */
     public function deleteUser(): void
     {
-        $user = new User([
-            'mail' => 'superadmin@example.com',
-            'password' => 'superadmin'
-        ]);
+        $user = TestHelper::getUser('superadmin');
 
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);
 
         $userData = [
             'login' => 'test_name',
-            'password' => 'test_test',
+            'password' => 'test_password',
             'email' => 'test@test.com',
             'name' => 'test',
             'age' => '20',
-            'name_on_project' => 4,
-            'english_lvl' => 5,
+            'name_on_project' => '4',
+            'english_lvl' => '5',
         ];
 
-        $this->json('POST', '/api/user', $userData);
-
-        $response = $this->json('DELETE', 'api/user' . $userData['login']);
+        $response = $this->json('DELETE', 'api/user/' . $userData['login']);
 
         $response->assertStatus(200);
     }

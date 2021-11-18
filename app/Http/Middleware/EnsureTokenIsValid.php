@@ -22,7 +22,7 @@ class EnsureTokenIsValid
      * @param Closure $next
      * @return JsonResponse|Response
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response|JsonResponse
     {
         try {
             JWTAuth::parseToken()->authenticate();
