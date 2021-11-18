@@ -18,7 +18,7 @@ class CreateNotesTable extends Migration
             $table->string('name');
             $table->timestamp('date');
             $table->integer('manager_id');
-            $table->integer('persone_id');
+            $table->integer('user_id');
         });
     }
 

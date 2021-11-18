@@ -16,7 +16,7 @@ class CreateCurrencyRecordsTable extends Migration
         Schema::create('currency_records', function (Blueprint $table) {
             $table->id();
             $table->integer('company_id');
-            $table->integer('project_sallary');
+            $table->integer('project_salary');
             $table->integer('currency_id');
             $table->float('bank_rate');
             $table->float('tex_rate');

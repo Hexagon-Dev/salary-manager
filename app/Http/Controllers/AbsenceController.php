@@ -4,19 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\AbsenceServiceInterface;
 use App\Models\Absence;
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class AbsenceController extends Controller
 {
     protected AbsenceServiceInterface $service;
+    protected Authenticatable|User|null $user;
 
     /**
      * @param AbsenceServiceInterface $service
+     * @param Authenticatable|null $user
      */
-    public function __construct(AbsenceServiceInterface $service)
+    public function __construct(AbsenceServiceInterface $service, ?Authenticatable $user = null)
     {
         $this->service = $service;
+        $this->user = $user;
     }
 
     /**
@@ -24,9 +30,11 @@ class AbsenceController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        $collection = $this->service->readAll();
+        if (!$this->user->can(['read', 'absence'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        return response()->json($this->service->readAll(), Response::HTTP_OK);
     }
 
     /**
@@ -35,52 +43,66 @@ class AbsenceController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
+        if (!$this->user->can(['create', 'absence'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
+
         $request->validate([
             'type' => 'int',
             'persone_id' => 'int',
         ]);
 
-        $collection = $this->service->create($request->toArray());
-
-        return response()->json($collection->get('message'), $collection->get('status'));
+        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
     }
 
     /**
-     * @param string $login
+     * @param int $id
      * @return JsonResponse
      */
-    public function readOne(string $login): JsonResponse
+    public function readOne(int $id): JsonResponse
     {
-        $collection = $this->service->readOne($login);
+        if (!$this->user->can(['read', 'absence'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        return response()->json($this->service->readOne($id), Response::HTTP_OK);
     }
 
     /**
      * @param Request $request
-     * @param string $login
+     * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, string $login): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
+        if (!$this->user->can(['read', 'absence'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
+
         $request->validate([
-            'type' => 'int',
-            'persone_id' => 'int',
+            'type' => 'required|numeric',
+            'persone_id' => 'required|numeric',
         ]);
 
-        $collection = $this->service->update($request->toArray(), $login);
+        if (! $absence = $this->service->readOne($id)) {
+            return response()->json(['error' => 'absence_not_found'], Response::HTTP_NOT_FOUND);
+        }
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        /** @var Absence $absence */
+        $absence = $this->service->update($absence, $request->toArray());
+
+        return response()->json($absence, Response::HTTP_OK);
     }
 
     /**
-     * @param string $login
+     * @param int $id
      * @return JsonResponse
      */
-    public function delete(string $login): JsonResponse
+    public function delete(int $id): JsonResponse
     {
-        $collection = $this->service->delete($login);
+        $absence = $this->service->readOne($id);
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        /** @var Absence $absence */
+        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($absence));
     }
 }

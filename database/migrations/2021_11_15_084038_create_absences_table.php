@@ -17,7 +17,7 @@ class CreateAbsencesTable extends Migration
             $table->id();
             $table->timestamps();
             $table->integer('type');
-            $table->integer('persone_id');
+            $table->integer('user_id');
         });
     }
 

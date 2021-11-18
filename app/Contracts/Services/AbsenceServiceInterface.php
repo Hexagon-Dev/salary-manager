@@ -2,7 +2,9 @@
 
 namespace App\Contracts\Services;
 
+use App\Models\Absence;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 interface AbsenceServiceInterface
 {
@@ -13,26 +15,26 @@ interface AbsenceServiceInterface
 
     /**
      * @param array $attributes
-     * @return Collection
+     * @return Model
      */
-    public function create(array $attributes): Collection;
+    public function create(array $attributes): Model;
 
     /**
      * @param int $id
-     * @return Collection
+     * @return Model
      */
-    public function readOne(int $id): Collection;
+    public function readOne(int $id): Model;
 
     /**
+     * @param Absence $absence
      * @param array $attributes
-     * @param int $id
-     * @return Collection
+     * @return Absence
      */
-    public function update(array $attributes, int $id): Collection;
+    public function update(Absence $absence, array $attributes): Absence;
 
     /**
-     * @param int $id
-     * @return Collection
+     * @param Absence $absence
+     * @return int
      */
-    public function delete(int $id): Collection;
+    public function delete(Absence $absence): int;
 }

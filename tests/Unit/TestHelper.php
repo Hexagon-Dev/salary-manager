@@ -10,9 +10,6 @@ class TestHelper
 {
     public static function getUser($login): Model|Builder
     {
-        $user = User::query()->where('login', $login)->firstOrFail();
-        //$user->update(['password' => 'superadmin']);
-
-        return $user;
+        return User::query()->where('login', $login)->firstOrFail();
     }
 }

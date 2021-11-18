@@ -4,140 +4,59 @@ namespace App\Services;
 
 use App\Contracts\Services\AbsenceServiceInterface;
 use App\Models\Absence;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response;
 
 class AbsenceService implements AbsenceServiceInterface
 {
-    protected ?Authenticatable $user;
-
-    public function __construct(/*Authenticatable $absence*/)
-    {
-        //$this->user = $user;
-        $this->user = auth()->user() ?? User::query()->findOrFail('3');
-    }
 
     /**
      * @return Collection
      */
     public function readAll(): Collection
     {
-        if (!$this->user->can(['read', 'absence'])) {
-            return Collection::make([
-                'error' => 'access_denied',
-                'status' => Response::HTTP_FORBIDDEN,
-            ]);
-        }
-
-        return Collection::make([
-            'message' => Absence::all(),
-            'status' => Response::HTTP_OK,
-        ]);
+        return Absence::all();
     }
 
     /**
      * @param int $id
-     * @return Collection
+     * @return Model
      */
-    public function readOne(int $id): Collection
+    public function readOne(int $id): Model
     {
-        if (!$this->user->can(['read', 'absence'])) {
-            return Collection::make([
-                'message' => 'access_denied',
-                'status' => Response::HTTP_FORBIDDEN,
-            ]);
-        }
-
-        if (! $absence = Absence::query()->where('id', $id)->first()) {
-            return Collection::make([
-                'message' => 'not_found',
-                'status' => Response::HTTP_NOT_FOUND,
-            ]);
-        }
-
-        return Collection::make([
-            'message' => $absence->toArray(),
-            'status' => Response::HTTP_OK,
-        ]);
+        return Absence::query()->where('id', $id)->firstOrFail();
     }
 
     /**
      * @param array $attributes
-     * @return Collection
+     * @return Model
      */
-    public function create(array $attributes): Collection
+    public function create(array $attributes): Model
     {
-        if (!$this->user->can(['create', 'absence'])) {
-            return Collection::make([
-                'message' => 'access_denied',
-                'status' => Response::HTTP_FORBIDDEN,
-            ]);
-        }
-
-        $absence = Absence::query()->create($attributes);
-
-        return Collection::make([
-            'message' => $absence,
-            'status' => Response::HTTP_OK,
-        ]);
+        return Absence::query()->create($attributes);
     }
 
     /**
+     * @param Absence $absence
      * @param array $attributes
-     * @param int $id
-     * @return Collection
+     * @return Absence
      */
-    public function update(array $attributes, int $id): Collection
+    public function update(Absence $absence, array $attributes): Absence
     {
-        if (!$this->user->can(['update', 'absence'])) {
-            return Collection::make([
-                'message' => 'access_denied',
-                'status' => Response::HTTP_FORBIDDEN,
-            ]);
-        }
-
-        if (! $absence = Absence::query()->where('id', $id)->first()) {
-            return Collection::make([
-                'message' => 'not_found',
-                'status' => Response::HTTP_NOT_FOUND,
-            ]);
-        }
-
         $absence->update($attributes);
 
-        return Collection::make([
-            'message' => $absence->toArray(),
-            'status' => Response::HTTP_OK,
-        ]);
+        return $absence;
     }
 
     /**
-     * @param int $id
-     * @return Collection
+     * @param Absence $absence
+     * @return int
      */
-    public function delete(int $id): Collection
+    public function delete(Absence $absence): int
     {
-        if (!$this->user->can(['delete', 'absence'])) {
-            return Collection::make([
-                'message' => 'access_denied',
-                'status' => Response::HTTP_FORBIDDEN,
-            ]);
-        }
-
-        if (! $absence = Absence::query()->where('id', $id)->first()) {
-            return Collection::make([
-                'message' => 'not_found',
-                'status' => Response::HTTP_NOT_FOUND,
-            ]);
-        }
-
         $absence->delete();
 
-        return Collection::make([
-            'message' => 'deleted',
-            'status' => Response::HTTP_OK,
-        ]);
+        return Response::HTTP_OK;
     }
 }
