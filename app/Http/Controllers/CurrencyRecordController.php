@@ -6,6 +6,7 @@ use App\Contracts\Services\CurrencyRecordServiceInterface;
 use App\Models\CurrencyRecord;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 class CurrencyRecordController extends Controller
 {
     protected CurrencyRecordServiceInterface $service;
-    protected Authenticatable|User|null $user;
 
     /**
      * @param CurrencyRecordServiceInterface $service

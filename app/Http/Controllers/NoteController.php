@@ -6,6 +6,7 @@ use App\Contracts\Services\NoteServiceInterface;
 use App\Models\Note;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 class NoteController extends Controller
 {
     protected NoteServiceInterface $service;
-    protected Authenticatable|User|null $user;
 
     /**
      * @param NoteServiceInterface $service

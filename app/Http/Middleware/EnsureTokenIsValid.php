@@ -4,10 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Response;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -20,19 +17,25 @@ class EnsureTokenIsValid
      *
      * @param Request $request
      * @param Closure $next
-     * @return JsonResponse|Response
+     * @return mixed
      */
-    public function handle(Request $request, Closure $next): Response|JsonResponse
+    public function handle(Request $request, Closure $next)
     {
+
+        if ($request->user()) {
+            return $next($request);
+        }
+
         try {
             JWTAuth::parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
-            return response()->json(Collection::make(['error' => 'token_expired']));
+            return response()->json(['error' => 'token_expired']);
         } catch (TokenInvalidException $e) {
-            return response()->json(Collection::make(['error' => 'token_invalid']));
+            return response()->json(['error' => 'token_invalid']);
         } catch (JWTException $e) {
-            return response()->json(Collection::make(['error' => 'token_absent']));
+            return response()->json(['error' => 'token_absent']);
         }
+
         return $next($request);
     }
 }

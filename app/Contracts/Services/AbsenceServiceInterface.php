@@ -21,9 +21,9 @@ interface AbsenceServiceInterface
 
     /**
      * @param int $id
-     * @return Model
+     * @return ?Model
      */
-    public function readOne(int $id): Model;
+    public function readOne(int $id): ?Model;
 
     /**
      * @param Absence $absence

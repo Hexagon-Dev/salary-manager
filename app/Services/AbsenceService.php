@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response;
 
-class AbsenceService implements AbsenceServiceInterface
+class AbsenceService extends AbstractService implements AbsenceServiceInterface
 {
 
     /**
@@ -21,11 +21,11 @@ class AbsenceService implements AbsenceServiceInterface
 
     /**
      * @param int $id
-     * @return Model
+     * @return ?Model
      */
-    public function readOne(int $id): Model
+    public function readOne(int $id): ?Model
     {
-        return Absence::query()->where('id', $id)->firstOrFail();
+        return Absence::query()->where('id', $id)->first();
     }
 
     /**

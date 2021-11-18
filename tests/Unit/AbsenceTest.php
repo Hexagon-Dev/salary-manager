@@ -3,24 +3,54 @@
 namespace Tests\Unit;
 
 use App\Models\Absence;
+use App\Models\User;
+use Database\Seeders\PermissionsSeeder;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AbsenceTest extends TestCase
 {
+    /** @var Authenticatable|User */
+    protected $admin;
+
+    protected $absenceData = [
+        'type' => 1,
+        'user_id' => 2,
+    ];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->admin = User::query()->find(1);
+    }
+
     /**
      * @test
      */
     public function showAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->actingAs($this->admin);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $absenceDataSecond = [
+            'type' => 1,
+            'user_id' => 2,
+        ];
 
-        $response = $this->json('GET', '/api/absence');
+        Absence::query()->create($this->absenceData);
+        Absence::query()->create($absenceDataSecond);
 
-        $response->assertStatus(200);
+        $this->json('GET', route('absence-all'))
+            ->assertOk()
+            ->assertJson([$this->absenceData, $absenceDataSecond]);
+
+        Absence::query()->truncate();
+
+        $this->json('GET', route('absence-all'))
+            ->assertOk()
+            ->assertJson([]);
     }
 
     /**
@@ -28,23 +58,18 @@ class AbsenceTest extends TestCase
      */
     public function showOne(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->actingAs($this->admin);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $absence = Absence::query()->create($this->absenceData);
 
-        $absenceData = [
-            'type' => 1,
-            'user_id' => 2,
-        ];
+        $this->json('GET', route('absence-create', $absence->id))
+            ->assertOk()
+            ->assertJson([$this->absenceData]);
 
-        $absence = Absence::query()->create($absenceData);
+        Absence::query()->truncate();
 
-        $response = $this->json('GET', '/api/absence/' . $absence->id);
-
-        $response->assertStatus(200);
-
-        Absence::query()->findOrFail($absence->id)->delete();
+        $this->json('GET', route('absence-one', $absence->id))
+            ->assertNotFound();
     }
 
     /**
@@ -52,23 +77,17 @@ class AbsenceTest extends TestCase
      */
     public function create(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->actingAs($this->admin);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('absence-one', 1))
+            ->assertNotFound();
 
-        $absenceData = [
-            'type' => 1,
-            'user_id' => 2,
-        ];
+        $this->json('POST', route('absence-create'), $this->absenceData)
+            ->assertCreated();
 
-        $response = $this->json('POST', '/api/absence', $absenceData);
-
-        $response
-            ->assertStatus(201)
-            ->assertJson($absenceData);
-
-        Absence::query()->findOrFail($response->json()['id'])->delete();
+        $this->json('GET', route('absence-one', 1))
+            ->assertOk()
+            ->assertJson($this->absenceData);
     }
 
     /**
@@ -76,19 +95,49 @@ class AbsenceTest extends TestCase
      */
     public function deleteAbsence(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->actingAs($this->admin);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('DELETE', route('absence-delete', 1))
+            ->assertOk();
 
-        $absenceData = [
-            'type' => 1,
-            'user_id' => 2,
+        /** @var Absence $absence */
+        $absence = Absence::query()->create($this->absenceData);
+
+        $this->json('GET', route('absence-one', $absence->id))
+            ->assertOk();
+
+        $this->json('DELETE', route('absence-delete', $absence->id))
+            ->assertOk();
+
+        $this->json('DELETE', route('absence-delete', $absence->id))
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function update(): void
+    {
+        $this->actingAs($this->admin);
+
+        $absenceDataNew = [
+            'type' => 2,
+            'user_id' => 3,
         ];
 
-        $absence = Absence::query()->create($absenceData);
-        $response = $this->json('DELETE', 'api/absence/' . $absence->id);
+        $this->patch(route('absence-update', 13), $absenceDataNew)
+            ->assertStatus(Response::HTTP_NOT_FOUND);
 
-        $response->assertStatus(200);
+        /** @var Absence $absence */
+        $absence = Absence::query()->create($this->absenceData);
+
+
+
+        $this->patch(route('absence-update', $absence->id), [])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->patch(route('absence-update', $absence->id), $absenceDataNew)
+            ->assertOk()
+            ->assertJson($absenceDataNew);
     }
 }

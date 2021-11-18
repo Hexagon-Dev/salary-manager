@@ -4,26 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\AbsenceServiceInterface;
 use App\Models\Absence;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AbsenceController extends Controller
 {
-    protected AbsenceServiceInterface $service;
-    protected Authenticatable|User|null $user;
-
-    /**
-     * @param AbsenceServiceInterface $service
-     * @param Authenticatable|null $user
-     */
-    public function __construct(AbsenceServiceInterface $service, ?Authenticatable $user = null)
-    {
-        $this->service = $service;
-        $this->user = $user;
-    }
+    protected string $serviceInterface = AbsenceServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -65,6 +52,10 @@ class AbsenceController extends Controller
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
+        if ($this->service->readOne($id) === null) {
+            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
+        }
+
         return response()->json($this->service->readOne($id), Response::HTTP_OK);
     }
 
@@ -96,13 +87,17 @@ class AbsenceController extends Controller
 
     /**
      * @param int $id
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): int
     {
-        $absence = $this->service->readOne($id);
-
         /** @var Absence $absence */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($absence));
+        if (! $absence = $this->service->readOne($id)) {
+            return Response::HTTP_OK;
+        }
+
+        $this->service->delete($absence);
+
+        return Response::HTTP_OK;
     }
 }

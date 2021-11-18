@@ -18,10 +18,8 @@ class PermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Basic permissions
         Permission::create(['name' => 'create']);
         Permission::create(['name' => 'read']);
         Permission::create(['name' => 'update']);
@@ -40,20 +38,25 @@ class PermissionsSeeder extends Seeder
             'note',
             'role',
             'permission',
-            ];
+        ];
 
         $all_tables_role = Role::create(['name' => 'all_tables']);
 
         foreach ($tables as $table) {
             Permission::create(['name' => $table]);
-            $all_tables_role->givePermissionTo($table);
         }
+
+        $all_tables_role->givePermissionTo($tables);
 
         // create roles and assign existing permissions
         $guest_role = Role::create(['name' => 'guest']);
 
         $user_role = Role::create(['name' => 'user']);
-        $user_role->givePermissionTo(['user', 'read', 'create']);
+        $user_role->givePermissionTo([
+            'user',
+            'read',
+            'create'
+        ]);
 
         $admin_role = Role::create(['name' => 'admin']);
         $admin_role->givePermissionTo([
@@ -76,6 +79,14 @@ class PermissionsSeeder extends Seeder
         ]);
 
         $user = User::factory()->create([
+            'login' => 'superadmin',
+            'email' => 'superadmin@example.com',
+            'password' => Hash::make('superadmin'),
+        ]);
+        $user->assignRole($super_admin_role);
+        $user->assignRole($all_tables_role);
+
+        $user = User::factory()->create([
             'login' => 'guest',
             'email' => 'guest@example.com',
             'password' => Hash::make('guest'),
@@ -95,13 +106,5 @@ class PermissionsSeeder extends Seeder
             'password' => Hash::make('admin'),
         ]);
         $user->assignRole($admin_role);
-
-        $user = User::factory()->create([
-            'login' => 'superadmin',
-            'email' => 'superadmin@example.com',
-            'password' => Hash::make('superadmin'),
-        ]);
-        $user->assignRole($super_admin_role);
-        $user->assignRole($all_tables_role);
     }
 }

@@ -47,11 +47,11 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
     //ABSENCE
     Route::prefix('absence')->group(function () {
-        Route::post('', [AbsenceController::class, 'create']);
-        Route::get('', [AbsenceController::class, 'readAll']);
-        Route::get('/{absence}', [AbsenceController::class, 'readOne']);
-        Route::patch('/{absence}', [AbsenceController::class, 'update']);
-        Route::delete('/{absence}', [AbsenceController::class, 'delete']);
+        Route::post('/', [AbsenceController::class, 'create'])->name('absence-create');
+        Route::get('/', [AbsenceController::class, 'readAll'])->name('absence-all');
+        Route::get('/{absence}', [AbsenceController::class, 'readOne'])->name('absence-one');
+        Route::patch('/{absence}', [AbsenceController::class, 'update'])->name('absence-update');
+        Route::delete('/{absence}', [AbsenceController::class, 'delete'])->name('absence-delete');
     });
 
     //COMPANY

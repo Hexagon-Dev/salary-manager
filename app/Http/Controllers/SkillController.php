@@ -6,6 +6,7 @@ use App\Contracts\Services\SkillServiceInterface;
 use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 class SkillController extends Controller
 {
     protected SkillServiceInterface $service;
-    protected Authenticatable|User|null $user;
 
     /**
      * @param SkillServiceInterface $service
