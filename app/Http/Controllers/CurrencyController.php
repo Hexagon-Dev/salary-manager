@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Services\CompanyServiceInterface;
-use App\Models\Company;
+use App\Contracts\Services\CurrencyServiceInterface;
+use App\Models\Currency;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CompanyController extends Controller
+class CurrencyController extends Controller
 {
-    protected CompanyServiceInterface $service;
+    protected CurrencyServiceInterface $service;
     protected Authenticatable|User|null $user;
 
     /**
-     * @param CompanyServiceInterface $service
+     * @param CurrencyServiceInterface $service
      * @param Authenticatable|null $user
      */
-    public function __construct(CompanyServiceInterface $service, ?Authenticatable $user = null)
+    public function __construct(CurrencyServiceInterface $service, ?Authenticatable $user = null)
     {
         $this->service = $service;
         $this->user = $user;
@@ -30,7 +30,7 @@ class CompanyController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        if (!$this->user->can(['read', 'company'])) {
+        if (!$this->user->can(['read', 'currency'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
@@ -43,14 +43,14 @@ class CompanyController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
-        if (!$this->user->can(['create', 'company'])) {
+        if (!$this->user->can(['create', 'currency'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
         $request->validate([
             'name' => 'required|max:255',
-            'contacts' => 'required|max:255',
-            'create_time' => 'required',
+            'rate' => 'required',
+            'symbol' => 'required|max:255',
         ]);
 
         return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
@@ -62,7 +62,7 @@ class CompanyController extends Controller
      */
     public function readOne(int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'company'])) {
+        if (!$this->user->can(['read', 'currency'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
@@ -76,24 +76,24 @@ class CompanyController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'company'])) {
+        if (!$this->user->can(['read', 'currency'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
         $request->validate([
             'name' => 'required|max:255',
-            'contacts' => 'required|max:255',
-            'create_time' => 'required',
+            'rate' => 'required',
+            'symbol' => 'required|max:255',
         ]);
 
-        if (! $company = $this->service->readOne($id)) {
+        if (! $currency = $this->service->readOne($id)) {
             return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
         }
 
-        /** @var Company $company */
-        $company = $this->service->update($company, $request->toArray());
+        /** @var Currency $currency */
+        $currency = $this->service->update($currency, $request->toArray());
 
-        return response()->json($company, Response::HTTP_OK);
+        return response()->json($currency, Response::HTTP_OK);
     }
 
     /**
@@ -102,9 +102,9 @@ class CompanyController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
-        $company = $this->service->readOne($id);
+        $currency = $this->service->readOne($id);
 
-        /** @var Company $company */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($company));
+        /** @var Currency $currency */
+        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($currency));
     }
 }

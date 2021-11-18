@@ -85,7 +85,7 @@ class UserController extends Controller
         ]);
 
         if (! $user = $this->service->readOne($login)) {
-            return response()->json(['error' => 'user_not_found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
         }
 
         /** @var User $user */

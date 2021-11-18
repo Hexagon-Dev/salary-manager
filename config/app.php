@@ -178,6 +178,7 @@ return [
         App\Providers\UserServiceProvider::class,
         App\Providers\AbsenceServiceProvider::class,
         App\Providers\CompanyServiceProvider::class,
+        App\Providers\CurrencyServiceProvider::class,
 
     ],
 

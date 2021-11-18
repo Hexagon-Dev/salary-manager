@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Support\Facades\Route;
@@ -49,12 +50,21 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::delete('/{absence}', [AbsenceController::class, 'delete']);
     });
 
-    //ABSENCE
+    //COMPANY
     Route::prefix('company')->group(function () {
         Route::post('', [CompanyController::class, 'create']);
         Route::get('', [CompanyController::class, 'readAll']);
         Route::get('/{company}', [CompanyController::class, 'readOne']);
         Route::patch('/{company}', [CompanyController::class, 'update']);
         Route::delete('/{company}', [CompanyController::class, 'delete']);
+    });
+
+    //CURRENCY
+    Route::prefix('currency')->group(function () {
+        Route::post('', [CurrencyController::class, 'create']);
+        Route::get('', [CurrencyController::class, 'readAll']);
+        Route::get('/{currency}', [CurrencyController::class, 'readOne']);
+        Route::patch('/{currency}', [CurrencyController::class, 'update']);
+        Route::delete('/{currency}', [CurrencyController::class, 'delete']);
     });
 });
