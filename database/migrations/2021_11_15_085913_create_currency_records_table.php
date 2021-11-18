@@ -19,7 +19,7 @@ class CreateCurrencyRecordsTable extends Migration
             $table->integer('project_salary');
             $table->integer('currency_id');
             $table->float('bank_rate');
-            $table->float('tex_rate');
+            $table->float('tax_rate');
             $table->tinyInteger('net');
             $table->tinyInteger('month');
             $table->timestamp('operation_date');
