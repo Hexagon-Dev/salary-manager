@@ -3,7 +3,6 @@
 namespace App\Contracts\Services;
 
 use App\Models\User;
-use http\Env\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -17,13 +16,13 @@ interface UserServiceInterface
 
     /**
      * @param array $attributes
-     * @return Collection
+     * @return User
      */
     public function create(array $attributes): User;
 
     /**
      * @param string $login
-     * @return User|Model
+     * @return Model
      */
     public function readOne(string $login): Model;
 

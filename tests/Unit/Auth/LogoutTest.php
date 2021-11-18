@@ -11,7 +11,7 @@ class LogoutTest extends TestCase
     /**
      * @test
      */
-    public function logout()
+    public function logout(): void
     {
         $user = new User([
             'mail' => 'superadmin@example.com',

@@ -16,6 +16,7 @@ class UserController extends Controller
 
     /**
      * @param UserServiceInterface $service
+     * @param Authenticatable|null $user
      */
     public function __construct(UserServiceInterface $service, ?Authenticatable $user = null)
     {
@@ -87,6 +88,7 @@ class UserController extends Controller
             return response()->json(['error' => 'user_not_found'], Response::HTTP_NOT_FOUND);
         }
 
+        /** @var User $user */
         $user = $this->service->update($user, $request->toArray());
 
         return response()->json($user, Response::HTTP_OK);
@@ -99,7 +101,8 @@ class UserController extends Controller
     public function delete(string $login): JsonResponse
     {
         $user = $this->service->readOne($login);
-
+        
+        /** @var User $user */
         return response()->json(['message' => 'successfully_deleted'], $this->service->delete($user));
     }
 }

@@ -104,7 +104,7 @@ class UserTest extends TestCase
 
         $userData = [
             'login' => 'test_name',
-            'password' => 'testtest',
+            'password' => 'test_test',
             'email' => 'test@test.com',
             'name' => 'test',
             'age' => '20',

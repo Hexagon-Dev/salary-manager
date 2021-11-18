@@ -22,7 +22,7 @@ class UserService implements UserServiceInterface
 
     /**
      * @param string $login
-     * @return User|Model
+     * @return Model
      */
     public function readOne(string $login): Model
     {
