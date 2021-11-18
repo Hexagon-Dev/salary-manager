@@ -3,19 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\UserServiceInterface;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
     protected UserServiceInterface $service;
+    protected ?Authenticatable $user;
 
     /**
      * @param UserServiceInterface $service
+     * @param Authenticatable|null $user
      */
-    public function __construct(UserServiceInterface $service)
+    public function __construct(UserServiceInterface $service, ?Authenticatable $user = null)
     {
         $this->service = $service;
+        $this->user = $user;
     }
 
     /**
@@ -23,9 +28,11 @@ class UserController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        $collection = $this->service->readAll();
+        if (!$this->user->can(['read', 'user'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        return response()->json($this->service->readAll(), Response::HTTP_OK);
     }
 
     /**
@@ -35,16 +42,15 @@ class UserController extends Controller
     public function create(Request $request): JsonResponse
     {
         $request->validate([
-            'login' => 'required|max:32|min: 6',
-            'password' => 'required|max:32|min: 8',
+            'login' => 'required|max:32|min:6|unique:users',
+            'email' => 'required|max:32|min:6|unique:users',
+            'password' => 'required|max:32|min:8',
             'name' => 'max:255',
             'age' => 'max:45',
             'role' => 'max:45',
         ]);
 
-        $collection = $this->service->create($request->toArray());
-
-        return response()->json($collection->get('message'), $collection->get('status'));
+        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
     }
 
     /**
@@ -53,9 +59,11 @@ class UserController extends Controller
      */
     public function readOne(string $login): JsonResponse
     {
-        $collection = $this->service->readOne($login);
+        if (!$this->user->can(['read', 'user'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        return response()->json($this->service->readOne($login), Response::HTTP_OK);
     }
 
     /**
@@ -65,15 +73,23 @@ class UserController extends Controller
      */
     public function update(Request $request, string $login): JsonResponse
     {
+        if (!$this->user->can(['update', 'user'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
+
         $request->validate([
-            'name' => 'max:255',
-            'age' => 'max:45',
-            'role' => 'max:45',
+            'name' => 'max:32',
+            'age' => 'max:32',
+            'role' => 'max:32',
         ]);
 
-        $collection = $this->service->update($request->toArray(), $login);
+        if (! $user = $this->service->readOne($login)) {
+            return response()->json(['error' => 'user_not_found'], Response::HTTP_NOT_FOUND);
+        }
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        $user = $this->service->update($user, $request->toArray());
+
+        return response()->json($user, Response::HTTP_OK);
     }
 
     /**
@@ -82,8 +98,8 @@ class UserController extends Controller
      */
     public function delete(string $login): JsonResponse
     {
-        $collection = $this->service->delete($login);
+        $user = $this->service->readOne($login);
 
-        return response()->json($collection->get('message'), $collection->get('status'));
+        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($user));
     }
 }

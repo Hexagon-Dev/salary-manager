@@ -11,7 +11,7 @@ class TokenRefreshTest extends TestCase
     /**
      * @test
      */
-    public function tokenRefresh()
+    public function tokenRefresh(): void
     {
         $user = new User([
             'mail' => 'superadmin@example.com',
@@ -21,7 +21,7 @@ class TokenRefreshTest extends TestCase
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);
 
-        $response = $this->json('POST', '/api/auth/refresh', []);
+        $response = $this->json('POST', '/api/auth/refresh');
 
         $response
             ->assertStatus(200)

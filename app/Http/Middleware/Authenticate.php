@@ -3,7 +3,12 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class Authenticate extends Middleware
 {
@@ -16,7 +21,16 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route('login');
+            try {
+                JWTAuth::parseToken()->authenticate();
+            } catch (TokenExpiredException $e) {
+                return response()->json(Collection::make(['error' => 'token_expired']));
+            } catch (TokenInvalidException $e) {
+                return response()->json(Collection::make(['error' => 'token_invalid']));
+            } catch (JWTException $e) {
+                return response()->json(Collection::make(['error' => 'token_absent']));
+            }
+            return $this->redirectTo($request);
         }
     }
 }
