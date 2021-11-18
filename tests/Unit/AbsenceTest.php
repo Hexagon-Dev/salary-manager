@@ -4,18 +4,16 @@ namespace Tests\Unit;
 
 use App\Models\Absence;
 use App\Models\User;
-use Database\Seeders\PermissionsSeeder;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AbsenceTest extends TestCase
 {
     /** @var Authenticatable|User */
     protected $admin;
 
-    protected $absenceData = [
+    protected array $absenceData = [
         'type' => 1,
         'user_id' => 2,
     ];
