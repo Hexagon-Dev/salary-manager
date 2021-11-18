@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\UserServiceInterface;
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,11 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 class UserController extends Controller
 {
     protected UserServiceInterface $service;
-    protected ?Authenticatable $user;
+    protected Authenticatable|User|null $user;
 
     /**
      * @param UserServiceInterface $service
-     * @param Authenticatable|null $user
      */
     public function __construct(UserServiceInterface $service, ?Authenticatable $user = null)
     {

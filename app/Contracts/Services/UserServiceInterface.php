@@ -2,6 +2,9 @@
 
 namespace App\Contracts\Services;
 
+use App\Models\User;
+use http\Env\Response;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 interface UserServiceInterface
@@ -16,24 +19,24 @@ interface UserServiceInterface
      * @param array $attributes
      * @return Collection
      */
-    public function create(array $attributes): Collection;
+    public function create(array $attributes): User;
 
     /**
      * @param string $login
-     * @return Collection
+     * @return User|Model
      */
-    public function readOne(string $login): Collection;
+    public function readOne(string $login): Model;
 
     /**
+     * @param User $user
      * @param array $attributes
-     * @param string $login
-     * @return Collection
+     * @return User
      */
-    public function update(array $attributes, string $login): Collection;
+    public function update(User $user, array $attributes): User;
 
     /**
-     * @param string $login
-     * @return Collection
+     * @param User $user
+     * @return int
      */
-    public function delete(string $login): Collection;
+    public function delete(User $user): int;
 }
