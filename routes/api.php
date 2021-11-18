@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CurrencyRecordController;
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Support\Facades\Route;
@@ -69,12 +71,30 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::delete('/{currency}', [CurrencyController::class, 'delete']);
     });
 
-    //CURRENCY_RECORDS
+    //CURRENCY_RECORD
     Route::prefix('currency_record')->group(function () {
         Route::post('', [CurrencyRecordController::class, 'create']);
         Route::get('', [CurrencyRecordController::class, 'readAll']);
         Route::get('/{currency_record}', [CurrencyRecordController::class, 'readOne']);
         Route::patch('/{currency_record}', [CurrencyRecordController::class, 'update']);
         Route::delete('/{currency_record}', [CurrencyRecordController::class, 'delete']);
+    });
+
+    //NOTE
+    Route::prefix('note')->group(function () {
+        Route::post('', [NoteController::class, 'create']);
+        Route::get('', [NoteController::class, 'readAll']);
+        Route::get('/{note}', [NoteController::class, 'readOne']);
+        Route::patch('/{note}', [NoteController::class, 'update']);
+        Route::delete('/{note}', [NoteController::class, 'delete']);
+    });
+
+    //SALARY
+    Route::prefix('salary')->group(function () {
+        Route::post('', [SalaryController::class, 'create']);
+        Route::get('', [SalaryController::class, 'readAll']);
+        Route::get('/{salary}', [SalaryController::class, 'readOne']);
+        Route::patch('/{salary}', [SalaryController::class, 'update']);
+        Route::delete('/{salary}', [SalaryController::class, 'delete']);
     });
 });

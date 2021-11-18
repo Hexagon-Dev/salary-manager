@@ -180,6 +180,8 @@ return [
         App\Providers\CompanyServiceProvider::class,
         App\Providers\CurrencyServiceProvider::class,
         App\Providers\CurrencyRServiceProvider::class,
+        App\Providers\NoteServiceProvider::class,
+        App\Providers\SalaryServiceProvider::class,
 
     ],
 
