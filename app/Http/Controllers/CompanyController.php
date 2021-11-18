@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Services\AbsenceServiceInterface;
-use App\Models\Absence;
+use App\Contracts\Services\CompanyServiceInterface;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AbsenceController extends Controller
+class CompanyController extends Controller
 {
-    protected AbsenceServiceInterface $service;
+    protected CompanyServiceInterface $service;
     protected Authenticatable|User|null $user;
 
     /**
-     * @param AbsenceServiceInterface $service
+     * @param CompanyServiceInterface $service
      * @param Authenticatable|null $user
      */
-    public function __construct(AbsenceServiceInterface $service, ?Authenticatable $user = null)
+    public function __construct(CompanyServiceInterface $service, ?Authenticatable $user = null)
     {
         $this->service = $service;
         $this->user = $user;
@@ -30,7 +30,7 @@ class AbsenceController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
+        if (!$this->user->can(['read', 'company'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
@@ -43,13 +43,14 @@ class AbsenceController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
-        if (!$this->user->can(['create', 'absence'])) {
+        if (!$this->user->can(['create', 'company'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
         $request->validate([
-            'type' => 'required|numeric',
-            'user_id' => 'required|numeric',
+            'name' => 'required|max:255',
+            'contacts' => 'required|max:255',
+            'create_time' => 'required',
         ]);
 
         return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
@@ -61,7 +62,7 @@ class AbsenceController extends Controller
      */
     public function readOne(int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
+        if (!$this->user->can(['read', 'company'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
@@ -75,23 +76,24 @@ class AbsenceController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
+        if (!$this->user->can(['read', 'company'])) {
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
         $request->validate([
-            'type' => 'required|numeric',
-            'user_id' => 'required|numeric',
+            'name' => 'required|max:255',
+            'contacts' => 'required|max:255',
+            'create_time' => 'required',
         ]);
 
-        if (! $absence = $this->service->readOne($id)) {
-            return response()->json(['error' => 'absence_not_found'], Response::HTTP_NOT_FOUND);
+        if (! $company = $this->service->readOne($id)) {
+            return response()->json(['error' => 'company_not_found'], Response::HTTP_NOT_FOUND);
         }
 
-        /** @var Absence $absence */
-        $absence = $this->service->update($absence, $request->toArray());
+        /** @var Company $company */
+        $company = $this->service->update($company, $request->toArray());
 
-        return response()->json($absence, Response::HTTP_OK);
+        return response()->json($company, Response::HTTP_OK);
     }
 
     /**
@@ -100,9 +102,9 @@ class AbsenceController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
-        $absence = $this->service->readOne($id);
+        $company = $this->service->readOne($id);
 
-        /** @var Absence $absence */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($absence));
+        /** @var Company $company */
+        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($company));
     }
 }

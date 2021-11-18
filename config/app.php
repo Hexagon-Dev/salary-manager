@@ -177,6 +177,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\UserServiceProvider::class,
         App\Providers\AbsenceServiceProvider::class,
+        App\Providers\CompanyServiceProvider::class,
 
     ],
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Support\Facades\Route;
@@ -46,5 +47,14 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::get('/{absence}', [AbsenceController::class, 'readOne']);
         Route::patch('/{absence}', [AbsenceController::class, 'update']);
         Route::delete('/{absence}', [AbsenceController::class, 'delete']);
+    });
+
+    //ABSENCE
+    Route::prefix('company')->group(function () {
+        Route::post('', [CompanyController::class, 'create']);
+        Route::get('', [CompanyController::class, 'readAll']);
+        Route::get('/{company}', [CompanyController::class, 'readOne']);
+        Route::patch('/{company}', [CompanyController::class, 'update']);
+        Route::delete('/{company}', [CompanyController::class, 'delete']);
     });
 });

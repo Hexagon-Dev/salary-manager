@@ -3,8 +3,6 @@
 namespace Tests\Unit;
 
 use App\Models\Absence;
-use App\Models\User;
-use Carbon\Traits\Timestamp;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
