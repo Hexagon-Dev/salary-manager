@@ -18,31 +18,31 @@ class AbsenceTest extends TestCase
         'user_id' => 2,
     ];
 
+    protected array $absenceDataNew = [
+        'type' => 2,
+        'user_id' => 3,
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->admin = User::query()->find(1);
+
+        $this->actingAs($this->admin);
     }
 
     /**
      * @test
      */
-    public function showAll(): void
+    public function readAll(): void
     {
-        $this->actingAs($this->admin);
-
-        $absenceDataSecond = [
-            'type' => 1,
-            'user_id' => 2,
-        ];
-
         Absence::query()->create($this->absenceData);
-        Absence::query()->create($absenceDataSecond);
+        Absence::query()->create($this->absenceDataNew);
 
         $this->json('GET', route('absence-all'))
             ->assertOk()
-            ->assertJson([$this->absenceData, $absenceDataSecond]);
+            ->assertJson([$this->absenceData, $this->absenceDataNew]);
 
         Absence::query()->truncate();
 
@@ -54,10 +54,9 @@ class AbsenceTest extends TestCase
     /**
      * @test
      */
-    public function showOne(): void
+    public function readOne(): void
     {
-        $this->actingAs($this->admin);
-
+        /** @var Absence $absence */
         $absence = Absence::query()->create($this->absenceData);
 
         $this->json('GET', route('absence-create', $absence->id))
@@ -75,8 +74,6 @@ class AbsenceTest extends TestCase
      */
     public function create(): void
     {
-        $this->actingAs($this->admin);
-
         $this->json('GET', route('absence-one', 1))
             ->assertNotFound();
 
@@ -93,8 +90,6 @@ class AbsenceTest extends TestCase
      */
     public function deleteAbsence(): void
     {
-        $this->actingAs($this->admin);
-
         $this->json('DELETE', route('absence-delete', 1))
             ->assertOk();
 
@@ -116,26 +111,17 @@ class AbsenceTest extends TestCase
      */
     public function update(): void
     {
-        $this->actingAs($this->admin);
-
-        $absenceDataNew = [
-            'type' => 2,
-            'user_id' => 3,
-        ];
-
-        $this->patch(route('absence-update', 13), $absenceDataNew)
-            ->assertStatus(Response::HTTP_NOT_FOUND);
+        $this->patch(route('absence-update', 13), $this->absenceDataNew)
+            ->assertNotFound();
 
         /** @var Absence $absence */
         $absence = Absence::query()->create($this->absenceData);
 
-
-
         $this->patch(route('absence-update', $absence->id), [])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        $this->patch(route('absence-update', $absence->id), $absenceDataNew)
+        $this->patch(route('absence-update', $absence->id), $this->absenceDataNew)
             ->assertOk()
-            ->assertJson($absenceDataNew);
+            ->assertJson($this->absenceDataNew);
     }
 }

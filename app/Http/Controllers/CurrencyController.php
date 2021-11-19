@@ -4,26 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\CurrencyServiceInterface;
 use App\Models\Currency;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CurrencyController extends Controller
 {
-    protected CurrencyServiceInterface $service;
-
-    /**
-     * @param CurrencyServiceInterface $service
-     * @param Authenticatable|null $user
-     */
-    public function __construct(CurrencyServiceInterface $service, ?Authenticatable $user = null)
-    {
-        $this->service = $service;
-        $this->user = $user;
-    }
+    protected string $serviceInterface = CurrencyServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -98,13 +85,10 @@ class CurrencyController extends Controller
 
     /**
      * @param int $id
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): int
     {
-        $currency = $this->service->readOne($id);
-
-        /** @var Currency $currency */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($currency));
+        return $this->service->delete($id);
     }
 }

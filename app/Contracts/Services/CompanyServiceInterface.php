@@ -33,8 +33,8 @@ interface CompanyServiceInterface
     public function update(Company $company, array $attributes): Company;
 
     /**
-     * @param Company $company
+     * @param int $id
      * @return int
      */
-    public function delete(Company $company): int;
+    public function delete(int $id): int;
 }

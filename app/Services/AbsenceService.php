@@ -21,11 +21,11 @@ class AbsenceService extends AbstractService implements AbsenceServiceInterface
 
     /**
      * @param int $id
-     * @return ?Model
+     * @return Model
      */
-    public function readOne(int $id): ?Model
+    public function readOne(int $id): Model
     {
-        return Absence::query()->where('id', $id)->first();
+        return Absence::query()->where('id', $id)->firstOrFail();
     }
 
     /**
@@ -50,12 +50,12 @@ class AbsenceService extends AbstractService implements AbsenceServiceInterface
     }
 
     /**
-     * @param Absence $absence
+     * @param int $id
      * @return int
      */
-    public function delete(Absence $absence): int
+    public function delete(int $id): int
     {
-        $absence->delete();
+        Absence::query()->where('id', $id)->delete();
 
         return Response::HTTP_OK;
     }

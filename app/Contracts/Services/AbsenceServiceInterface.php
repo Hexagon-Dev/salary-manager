@@ -21,9 +21,9 @@ interface AbsenceServiceInterface
 
     /**
      * @param int $id
-     * @return ?Model
+     * @return Model
      */
-    public function readOne(int $id): ?Model;
+    public function readOne(int $id): Model;
 
     /**
      * @param Absence $absence
@@ -33,8 +33,8 @@ interface AbsenceServiceInterface
     public function update(Absence $absence, array $attributes): Absence;
 
     /**
-     * @param Absence $absence
+     * @param int $id
      * @return int
      */
-    public function delete(Absence $absence): int;
+    public function delete(int $id): int;
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response;
 
-class CompanyService implements CompanyServiceInterface
+class CompanyService extends AbstractService implements CompanyServiceInterface
 {
 
     /**
@@ -50,12 +50,12 @@ class CompanyService implements CompanyServiceInterface
     }
 
     /**
-     * @param Company $company
+     * @param int $id
      * @return int
      */
-    public function delete(Company $company): int
+    public function delete(int $id): int
     {
-        $company->delete();
+        Company::query()->where('id', $id)->delete();
 
         return Response::HTTP_OK;
     }

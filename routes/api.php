@@ -56,55 +56,55 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
     //COMPANY
     Route::prefix('company')->group(function () {
-        Route::post('', [CompanyController::class, 'create']);
-        Route::get('', [CompanyController::class, 'readAll']);
-        Route::get('/{company}', [CompanyController::class, 'readOne']);
-        Route::patch('/{company}', [CompanyController::class, 'update']);
-        Route::delete('/{company}', [CompanyController::class, 'delete']);
+        Route::post('', [CompanyController::class, 'create'])->name('company-create');
+        Route::get('', [CompanyController::class, 'readAll'])->name('company-all');
+        Route::get('/{company}', [CompanyController::class, 'readOne'])->name('company-one');
+        Route::patch('/{company}', [CompanyController::class, 'update'])->name('company-update');
+        Route::delete('/{company}', [CompanyController::class, 'delete'])->name('company-delete');
     });
 
     //CURRENCY
     Route::prefix('currency')->group(function () {
-        Route::post('', [CurrencyController::class, 'create']);
-        Route::get('', [CurrencyController::class, 'readAll']);
-        Route::get('/{currency}', [CurrencyController::class, 'readOne']);
-        Route::patch('/{currency}', [CurrencyController::class, 'update']);
-        Route::delete('/{currency}', [CurrencyController::class, 'delete']);
+        Route::post('', [CurrencyController::class, 'create'])->name('currency-create');
+        Route::get('', [CurrencyController::class, 'readAll'])->name('currency-all');
+        Route::get('/{currency}', [CurrencyController::class, 'readOne'])->name('currency-one');
+        Route::patch('/{currency}', [CurrencyController::class, 'update'])->name('currency-update');
+        Route::delete('/{currency}', [CurrencyController::class, 'delete'])->name('currency-delete');
     });
 
     //CURRENCY_RECORD
     Route::prefix('currency_record')->group(function () {
-        Route::post('', [CurrencyRecordController::class, 'create']);
-        Route::get('', [CurrencyRecordController::class, 'readAll']);
-        Route::get('/{currency_record}', [CurrencyRecordController::class, 'readOne']);
-        Route::patch('/{currency_record}', [CurrencyRecordController::class, 'update']);
-        Route::delete('/{currency_record}', [CurrencyRecordController::class, 'delete']);
+        Route::post('', [CurrencyRecordController::class, 'create'])->name('currency_record-create');
+        Route::get('', [CurrencyRecordController::class, 'readAll'])->name('currency_record-all');
+        Route::get('/{currency_record}', [CurrencyRecordController::class, 'readOne'])->name('currency_record-one');
+        Route::patch('/{currency_record}', [CurrencyRecordController::class, 'update'])->name('currency_record-update');
+        Route::delete('/{currency_record}', [CurrencyRecordController::class, 'delete'])->name('currency_record-delete');
     });
 
     //NOTE
     Route::prefix('note')->group(function () {
-        Route::post('', [NoteController::class, 'create']);
-        Route::get('', [NoteController::class, 'readAll']);
-        Route::get('/{note}', [NoteController::class, 'readOne']);
-        Route::patch('/{note}', [NoteController::class, 'update']);
-        Route::delete('/{note}', [NoteController::class, 'delete']);
+        Route::post('', [NoteController::class, 'create'])->name('note-create');
+        Route::get('', [NoteController::class, 'readAll'])->name('note-all');
+        Route::get('/{note}', [NoteController::class, 'readOne'])->name('note-one');
+        Route::patch('/{note}', [NoteController::class, 'update'])->name('note-update');
+        Route::delete('/{note}', [NoteController::class, 'delete'])->name('note-delete');
     });
 
     //SALARY
     Route::prefix('salary')->group(function () {
-        Route::post('', [SalaryController::class, 'create']);
-        Route::get('', [SalaryController::class, 'readAll']);
-        Route::get('/{salary}', [SalaryController::class, 'readOne']);
-        Route::patch('/{salary}', [SalaryController::class, 'update']);
-        Route::delete('/{salary}', [SalaryController::class, 'delete']);
+        Route::post('', [SalaryController::class, 'create'])->name('salary-create');
+        Route::get('', [SalaryController::class, 'readAll'])->name('salary-all');
+        Route::get('/{salary}', [SalaryController::class, 'readOne'])->name('salary-one');
+        Route::patch('/{salary}', [SalaryController::class, 'update'])->name('salary-update');
+        Route::delete('/{salary}', [SalaryController::class, 'delete'])->name('salary-delete');
     });
 
     //SKILL
     Route::prefix('skill')->group(function () {
-        Route::post('', [SkillController::class, 'create']);
-        Route::get('', [SkillController::class, 'readAll']);
-        Route::get('/{skill}', [SkillController::class, 'readOne']);
-        Route::patch('/{skill}', [SkillController::class, 'update']);
-        Route::delete('/{skill}', [SkillController::class, 'delete']);
+        Route::post('', [SkillController::class, 'create'])->name('skill-create');
+        Route::get('', [SkillController::class, 'readAll'])->name('skill-all');
+        Route::get('/{skill}', [SkillController::class, 'readOne'])->name('skill-one');
+        Route::patch('/{skill}', [SkillController::class, 'update'])->name('skill-update');
+        Route::delete('/{skill}', [SkillController::class, 'delete'])->name('skill-delete');
     });
 });

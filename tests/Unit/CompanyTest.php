@@ -3,21 +3,42 @@
 namespace Tests\Unit;
 
 use App\Models\Company;
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CompanyTest extends TestCase
 {
+    /** @var Authenticatable|User */
+    protected $admin;
+
+    protected array $companyData = [
+        'name' => 'Hex-Craft',
+        'contacts' => 'Hexagon',
+        'create_time' => '2021-11-18 14:11:36',
+    ];
+
+    protected array $companyDataNew = [
+        'name' => 'Heroku',
+        'contacts' => 'Valeriy',
+        'create_time' => '2008-01-10 14:11:36',
+    ];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->admin = User::query()->find(1);
+
+        $this->actingAs($this->admin);
+    }
+
     /**
      * @test
      */
     public function showAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
-
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
-
         $response = $this->json('GET', '/api/company');
 
         $response->assertStatus(200);
@@ -26,26 +47,38 @@ class CompanyTest extends TestCase
     /**
      * @test
      */
-    public function showOne(): void
+    public function readAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        Company::query()->create($this->companyData);
+        Company::query()->create($this->companyDataNew);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('company-all'))
+            ->assertOk()
+            ->assertJson([$this->companyData, $this->companyDataNew]);
 
-        $companyData = [
-            'name' => 'Hex-Craft',
-            'contacts' => 'Hexagon',
-            'create_time' => '2021-11-18 14:11:36',
-        ];
+        Company::query()->truncate();
 
-        $company = Company::query()->create($companyData);
+        $this->json('GET', route('company-all'))
+            ->assertOk()
+            ->assertJson([]);
+    }
 
-        $response = $this->json('GET', '/api/company/' . $company->id);
+    /**
+     * @test
+     */
+    public function readOne(): void
+    {
+        /** @var Company $company */
+        $company = Company::query()->create($this->companyData);
 
-        $response->assertStatus(200);
+        $this->json('GET', route('company-create', $company->id))
+            ->assertOk()
+            ->assertJson([$this->companyData]);
 
-        Company::query()->findOrFail($company->id)->delete();
+        Company::query()->truncate();
+
+        $this->json('GET', route('company-one', $company->id))
+            ->assertNotFound();
     }
 
     /**
@@ -53,24 +86,15 @@ class CompanyTest extends TestCase
      */
     public function create(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('GET', route('company-one', 1))
+            ->assertNotFound();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('POST', route('company-create'), $this->companyData)
+            ->assertCreated();
 
-        $companyData = [
-            'name' => 'Hex-Craft',
-            'contacts' => 'Hexagon',
-            'create_time' => '2021-11-18 14:11:36',
-        ];
-
-        $response = $this->json('POST', '/api/company', $companyData);
-
-        $response
-            ->assertStatus(201)
-            ->assertJson($companyData);
-
-        Company::query()->findOrFail($response->json()['id'])->delete();
+        $this->json('GET', route('company-one', 1))
+            ->assertOk()
+            ->assertJson($this->companyData);
     }
 
     /**
@@ -78,20 +102,38 @@ class CompanyTest extends TestCase
      */
     public function deleteCompany(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('DELETE', route('company-delete', 1))
+            ->assertOk();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        /** @var Company $company */
+        $company = Company::query()->create($this->companyData);
 
-        $companyData = [
-            'name' => 'Hex-Craft',
-            'contacts' => 'Hexagon',
-            'create_time' => '2021-11-18 14:11:36',
-        ];
+        $this->json('GET', route('company-one', $company->id))
+            ->assertOk();
 
-        $company = Company::query()->create($companyData);
-        $response = $this->json('DELETE', 'api/company/' . $company->id);
+        $this->json('DELETE', route('company-delete', $company->id))
+            ->assertOk();
 
-        $response->assertStatus(200);
+        $this->json('DELETE', route('company-delete', $company->id))
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function update(): void
+    {
+        $this->patch(route('company-update', 13), $this->companyDataNew)
+            ->assertNotFound();
+
+        /** @var Company $company */
+        $company = Company::query()->create($this->companyData);
+
+        $this->patch(route('company-update', $company->id), [])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->patch(route('company-update', $company->id), $this->companyDataNew)
+            ->assertOk()
+            ->assertJson($this->companyDataNew);
     }
 }

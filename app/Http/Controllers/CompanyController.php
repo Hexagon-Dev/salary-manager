@@ -4,26 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\CompanyServiceInterface;
 use App\Models\Company;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CompanyController extends Controller
 {
-    protected CompanyServiceInterface $service;
-
-    /**
-     * @param CompanyServiceInterface $service
-     * @param Authenticatable|null $user
-     */
-    public function __construct(CompanyServiceInterface $service, ?Authenticatable $user = null)
-    {
-        $this->service = $service;
-        $this->user = $user;
-    }
+    protected string $serviceInterface = CompanyServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -86,9 +73,7 @@ class CompanyController extends Controller
             'create_time' => 'required',
         ]);
 
-        if (! $company = $this->service->readOne($id)) {
-            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        }
+        $company = $this->service->readOne($id);
 
         /** @var Company $company */
         $company = $this->service->update($company, $request->toArray());
@@ -98,13 +83,10 @@ class CompanyController extends Controller
 
     /**
      * @param int $id
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): int
     {
-        $company = $this->service->readOne($id);
-
-        /** @var Company $company */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($company));
+        return $this->service->delete($id);
     }
 }

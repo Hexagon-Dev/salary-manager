@@ -52,10 +52,6 @@ class AbsenceController extends Controller
             return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
         }
 
-        if ($this->service->readOne($id) === null) {
-            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        }
-
         return response()->json($this->service->readOne($id), Response::HTTP_OK);
     }
 
@@ -75,9 +71,7 @@ class AbsenceController extends Controller
             'user_id' => 'required|numeric',
         ]);
 
-        if (! $absence = $this->service->readOne($id)) {
-            return response()->json(['error' => 'absence_not_found'], Response::HTTP_NOT_FOUND);
-        }
+        $absence = $this->service->readOne($id);
 
         /** @var Absence $absence */
         $absence = $this->service->update($absence, $request->toArray());
@@ -91,13 +85,6 @@ class AbsenceController extends Controller
      */
     public function delete(int $id): int
     {
-        /** @var Absence $absence */
-        if (! $absence = $this->service->readOne($id)) {
-            return Response::HTTP_OK;
-        }
-
-        $this->service->delete($absence);
-
-        return Response::HTTP_OK;
+        return $this->service->delete($id);
     }
 }
