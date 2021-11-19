@@ -18,7 +18,37 @@ class AuthController extends Controller
     }
 
     /**
-     * Get a JWT via given credentials.
+     * @OA\Post(
+     *      path="/api/auth/login",
+     *      operationId="loginAuth",
+     *      tags={"Auth"},
+     *      summary="Responces with token.",
+     *      description="Responces with token.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="email",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="password",
+     *                      type="string"
+     *                  ),
+     *                  example={"email": "user@example.com", "password": "user"}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns JWT token.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      )
+     *     )
      *
      * @return JsonResponse
      */
@@ -34,7 +64,28 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the authenticated User.
+     * @OA\Post(
+     *      path="/api/auth/me",
+     *      operationId="meAuth",
+     *      tags={"Auth"},
+     *      summary="Gets the authenticated user.",
+     *      description="Gets the authenticated user.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns authenticated user.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      *
      * @return Collection
      */
@@ -44,7 +95,28 @@ class AuthController extends Controller
     }
 
     /**
-     * Log the user out (Invalidate the token).
+     * @OA\Post(
+     *      path="/api/auth/logout",
+     *      operationId="logoutAuth",
+     *      tags={"Auth"},
+     *      summary="Logs out.",
+     *      description="Logs out.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="Logs out.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      *
      * @return JsonResponse
      */
@@ -56,7 +128,28 @@ class AuthController extends Controller
     }
 
     /**
-     * Refresh a token.
+     * @OA\Post(
+     *      path="/api/auth/refresh",
+     *      operationId="refreshAuth",
+     *      tags={"Auth"},
+     *      summary="Refreshes token.",
+     *      description="Token expires in 1 hour. You can refresh it here.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns new token.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      *
      * @return JsonResponse
      */

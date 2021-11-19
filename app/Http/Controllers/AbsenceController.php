@@ -13,6 +13,29 @@ class AbsenceController extends Controller
     protected string $serviceInterface = AbsenceServiceInterface::class;
 
     /**
+     * @OA\Get(
+     *      path="/api/absence",
+     *      operationId="getAbsenceList",
+     *      tags={"Absences"},
+     *      summary="Get list of absences.",
+     *      description="Returns list of absences.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns list of absences.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @return JsonResponse
      */
     public function readAll(): JsonResponse
@@ -25,6 +48,45 @@ class AbsenceController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *      path="/api/absence",
+     *      operationId="createAbsence",
+     *      tags={"Absences"},
+     *      summary="Creates absence.",
+     *      description="Creates absence.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="type",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="user_id",
+     *                      type="integer"
+     *                  ),
+     *                  example={"type": "2", "user_id": "4"}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Returns absence.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -43,6 +105,38 @@ class AbsenceController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *      path="/api/absence/{absence}",
+     *      operationId="getAbsence",
+     *      tags={"Absences"},
+     *      summary="Get one absence.",
+     *      description="Returns one absence.",
+     *      security={
+     *        {"Bearer Token": {}},
+     *      },
+     *     @OA\Parameter(
+     *          name="id",
+     *          description="Absence id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns absence.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param int $id
      * @return JsonResponse
      */
@@ -56,6 +150,38 @@ class AbsenceController extends Controller
     }
 
     /**
+     * @OA\Patch (
+     *      path="/api/absence/{absence}",
+     *      operationId="updateAbsence",
+     *      tags={"Absences"},
+     *      summary="Updates absence.",
+     *      description="Updates absence parameters that were given in request.",
+     *      security={
+     *        {"Bearer Token": {}},
+     *      },
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Absence id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns absence.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param Request $request
      * @param int $id
      * @return JsonResponse
@@ -80,6 +206,38 @@ class AbsenceController extends Controller
     }
 
     /**
+     * @OA\Delete (
+     *      path="/api/absence/{id}",
+     *      operationId="deleteAbsence",
+     *      tags={"Absences"},
+     *      summary="Deletes absence.",
+     *      description="Deletes absence.",
+     *      security={
+     *        {"Bearer Token": {}},
+     *      },
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Absence id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Abstence deleted.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param int $id
      * @return int
      */

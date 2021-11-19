@@ -1,4 +1,8 @@
 # Salary Manager
+## Permissions managment
+PermissionSeeder creates all the permissions called by table names and permissions called: create, read, update, delete.
+  Also it creates 4 roles called: superadmin, admin, user and guest.
+For example to allow access to update skill table, give same permissions like this ['update', 'skill']. 
 ## Methods:
 ### Auth:
 | Method | URI | Description |
