@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 // AUTH
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
-    Route::middleware([EnsureTokenIsValid::class])->group(function () {
+    Route::middleware([])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::post('me', [AuthController::class, 'me']);

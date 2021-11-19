@@ -15,9 +15,9 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected string $serviceInterface;
+    protected string $serviceInterface = '';
 
-    protected AbstractService $service;
+    protected ?AbstractService $service;
 
     /** @var Authenticatable|Model|null  */
     protected $user;
@@ -29,7 +29,9 @@ class Controller extends BaseController
     public function __construct(?Authenticatable $user = null)
     {
         $this->user = $user;
-        $this->service = app()->make($this->serviceInterface);
+        if ($this->serviceInterface) {
+            $this->service = app()->make($this->serviceInterface);
+        }
     }
     /**
      * @SWG\Swagger(
