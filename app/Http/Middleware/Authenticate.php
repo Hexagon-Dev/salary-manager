@@ -15,7 +15,7 @@ class Authenticate
     {
         if (!$request->user()) {
             return response()->json([
-
+                'error' => 'token_absent',
             ], 401);
         }
 

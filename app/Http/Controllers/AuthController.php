@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
 use Throwable;
 
 class AuthController extends Controller
