@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
-    protected $serviceInterface = UserServiceInterface::class;
+    protected string $serviceInterface = UserServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -69,14 +69,13 @@ class UserController extends Controller
         }
 
         $request->validate([
+            'email' => 'required',
             'name' => 'max:32',
             'age' => 'max:32',
             'role' => 'max:32',
         ]);
 
-        if (! $user = $this->service->readOne($login)) {
-            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        }
+        $user = $this->service->readOne($login);
 
         /** @var User $user */
         $user = $this->service->update($user, $request->toArray());
@@ -86,13 +85,10 @@ class UserController extends Controller
 
     /**
      * @param string $login
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(string $login): JsonResponse
+    public function delete(string $login): int
     {
-        $user = $this->service->readOne($login);
-
-        /** @var User $user */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($user));
+        return $this->service->delete($login);
     }
 }

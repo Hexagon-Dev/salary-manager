@@ -33,8 +33,8 @@ interface SkillServiceInterface
     public function update(Skill $skill, array $attributes): Skill;
 
     /**
-     * @param Skill $skill
+     * @param int $id
      * @return int
      */
-    public function delete(Skill $skill): int;
+    public function delete(int $id): int;
 }

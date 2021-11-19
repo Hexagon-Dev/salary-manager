@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response;
 
-class NoteService implements NoteServiceInterface
+class NoteService extends AbstractService implements NoteServiceInterface
 {
 
     /**
@@ -50,12 +50,12 @@ class NoteService implements NoteServiceInterface
     }
 
     /**
-     * @param Note $note
+     * @param int $id
      * @return int
      */
-    public function delete(Note $note): int
+    public function delete(int $id): int
     {
-        $note->delete();
+        Note::query()->where('id', $id)->delete();
 
         return Response::HTTP_OK;
     }

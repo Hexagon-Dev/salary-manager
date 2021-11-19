@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\User;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -12,7 +13,7 @@ class LogoutTest extends TestCase
      */
     public function logout(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $user = User::query()->where('login', 'superadmin')->firstOrFail();
 
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);

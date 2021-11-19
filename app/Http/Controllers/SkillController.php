@@ -13,17 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SkillController extends Controller
 {
-    protected SkillServiceInterface $service;
-
-    /**
-     * @param SkillServiceInterface $service
-     * @param Authenticatable|null $user
-     */
-    public function __construct(SkillServiceInterface $service, ?Authenticatable $user = null)
-    {
-        $this->service = $service;
-        $this->user = $user;
-    }
+    protected string $serviceInterface = SkillServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -82,9 +72,7 @@ class SkillController extends Controller
             'name' => 'required|max:255',
         ]);
 
-        if (! $skill = $this->service->readOne($id)) {
-            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        }
+        $skill = $this->service->readOne($id);
 
         /** @var Skill $skill */
         $skill = $this->service->update($skill, $request->toArray());
@@ -94,13 +82,10 @@ class SkillController extends Controller
 
     /**
      * @param int $id
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): int
     {
-        $skill = $this->service->readOne($id);
-
-        /** @var Skill $skill */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($skill));
+        return $this->service->delete($id);
     }
 }

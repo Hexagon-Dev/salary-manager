@@ -13,17 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SalaryController extends Controller
 {
-    protected SalaryServiceInterface $service;
-
-    /**
-     * @param SalaryServiceInterface $service
-     * @param Authenticatable|null $user
-     */
-    public function __construct(SalaryServiceInterface $service, ?Authenticatable $user = null)
-    {
-        $this->service = $service;
-        $this->user = $user;
-    }
+    protected string $serviceInterface = SalaryServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -86,9 +76,7 @@ class SalaryController extends Controller
             'user_id' => 'required|numeric',
         ]);
 
-        if (! $salary = $this->service->readOne($id)) {
-            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        }
+        $salary = $this->service->readOne($id);
 
         /** @var Salary $salary */
         $salary = $this->service->update($salary, $request->toArray());
@@ -98,13 +86,10 @@ class SalaryController extends Controller
 
     /**
      * @param int $id
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): int
     {
-        $salary = $this->service->readOne($id);
-
-        /** @var Salary $salary */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($salary));
+        return $this->service->delete($id);
     }
 }

@@ -3,47 +3,69 @@
 namespace Tests\Unit;
 
 use App\Models\Skill;
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SkillTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function showAll(): void
+    /** @var Authenticatable|User */
+    protected $admin;
+
+    protected array $skillData = [
+        'name' => 'TestSkill',
+    ];
+
+    protected array $skillDataNew = [
+        'name' => 'TestSkill2',
+    ];
+
+    protected function setUp(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        parent::setUp();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->admin = User::query()->find(1);
 
-        $response = $this->json('GET', '/api/skill');
-
-        $response->assertStatus(200);
+        $this->actingAs($this->admin);
     }
 
     /**
      * @test
      */
-    public function showOne(): void
+    public function readAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        Skill::query()->create($this->skillData);
+        Skill::query()->create($this->skillDataNew);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('skill-all'))
+            ->assertOk()
+            ->assertJson([$this->skillData, $this->skillDataNew]);
 
-        $skillData = [
-            'name' => 'TestSkill',
-        ];
+        Skill::query()->truncate();
 
-        $skill = Skill::query()->create($skillData);
+        $this->json('GET', route('skill-all'))
+            ->assertOk()
+            ->assertJson([]);
+    }
 
-        $response = $this->json('GET', '/api/skill/' . $skill->id);
+    /**
+     * @test
+     */
+    public function readOne(): void
+    {
+        /** @var Skill $skill */
+        $skill = Skill::query()->create($this->skillData);
 
-        $response->assertStatus(200);
+        $this->json('GET', route('skill-create', $skill->id))
+            ->assertOk()
+            ->assertJson([$this->skillData]);
 
-        Skill::query()->findOrFail($skill->id)->delete();
+        Skill::query()->truncate();
+
+        $this->json('GET', route('skill-one', $skill->id))
+            ->assertNotFound();
     }
 
     /**
@@ -51,22 +73,15 @@ class SkillTest extends TestCase
      */
     public function create(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('GET', route('skill-one', 1))
+            ->assertNotFound();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('POST', route('skill-create'), $this->skillData)
+            ->assertCreated();
 
-        $skillData = [
-            'name' => 'TestSkill',
-        ];
-
-        $response = $this->json('POST', '/api/skill', $skillData);
-
-        $response
-            ->assertStatus(201)
-            ->assertJson($skillData);
-
-        Skill::query()->findOrFail($response->json()['id'])->delete();
+        $this->json('GET', route('skill-one', 1))
+            ->assertOk()
+            ->assertJson($this->skillData);
     }
 
     /**
@@ -74,18 +89,38 @@ class SkillTest extends TestCase
      */
     public function deleteSkill(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('DELETE', route('skill-delete', 1))
+            ->assertOk();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        /** @var Skill $skill */
+        $skill = Skill::query()->create($this->skillData);
 
-        $skillData = [
-            'name' => 'TestSkill',
-        ];
+        $this->json('GET', route('skill-one', $skill->id))
+            ->assertOk();
 
-        $skill = Skill::query()->create($skillData);
-        $response = $this->json('DELETE', 'api/skill/' . $skill->id);
+        $this->json('DELETE', route('skill-delete', $skill->id))
+            ->assertOk();
 
-        $response->assertStatus(200);
+        $this->json('DELETE', route('skill-delete', $skill->id))
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function update(): void
+    {
+        $this->patch(route('skill-update', 13), $this->skillDataNew)
+            ->assertNotFound();
+
+        /** @var Skill $skill */
+        $skill = Skill::query()->create($this->skillData);
+
+        $this->patch(route('skill-update', $skill->id), [])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->patch(route('skill-update', $skill->id), $this->skillDataNew)
+            ->assertOk()
+            ->assertJson($this->skillDataNew);
     }
 }

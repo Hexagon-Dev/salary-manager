@@ -13,17 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class NoteController extends Controller
 {
-    protected NoteServiceInterface $service;
-
-    /**
-     * @param NoteServiceInterface $service
-     * @param Authenticatable|null $user
-     */
-    public function __construct(NoteServiceInterface $service, ?Authenticatable $user = null)
-    {
-        $this->service = $service;
-        $this->user = $user;
-    }
+    protected string $serviceInterface = NoteServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -88,9 +78,7 @@ class NoteController extends Controller
             'user_id' => 'required|numeric',
         ]);
 
-        if (! $note = $this->service->readOne($id)) {
-            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        }
+        $note = $this->service->readOne($id);
 
         /** @var Note $note */
         $note = $this->service->update($note, $request->toArray());
@@ -100,13 +88,10 @@ class NoteController extends Controller
 
     /**
      * @param int $id
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): int
     {
-        $note = $this->service->readOne($id);
-
-        /** @var Note $note */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($note));
+        return $this->service->delete($id);
     }
 }

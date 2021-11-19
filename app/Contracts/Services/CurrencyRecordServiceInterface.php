@@ -33,8 +33,8 @@ interface CurrencyRecordServiceInterface
     public function update(CurrencyRecord $currency_record, array $attributes): CurrencyRecord;
 
     /**
-     * @param CurrencyRecord $currency_record
+     * @param int $id
      * @return int
      */
-    public function delete(CurrencyRecord $currency_record): int;
+    public function delete(int $id): int;
 }

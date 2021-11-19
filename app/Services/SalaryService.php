@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response;
 
-class SalaryService implements SalaryServiceInterface
+class SalaryService extends AbstractService implements SalaryServiceInterface
 {
 
     /**
@@ -50,12 +50,12 @@ class SalaryService implements SalaryServiceInterface
     }
 
     /**
-     * @param Salary $salary
+     * @param int $id
      * @return int
      */
-    public function delete(Salary $salary): int
+    public function delete(int $id): int
     {
-        $salary->delete();
+        Salary::query()->where('id', $id)->delete();
 
         return Response::HTTP_OK;
     }

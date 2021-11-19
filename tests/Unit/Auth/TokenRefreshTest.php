@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -12,7 +14,7 @@ class TokenRefreshTest extends TestCase
      */
     public function tokenRefresh(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $user = User::query()->where('login', 'superadmin')->firstOrFail();
 
         $token = JWTAuth::fromUser($user);
         $this->withToken($token);

@@ -2,24 +2,62 @@
 
 namespace Tests\Unit;
 
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserTest extends TestCase
 {
+    /** @var Authenticatable|User */
+    protected $admin;
+
+    protected array $userData = [
+        'login' => 'test_name',
+        'password' => 'test_password',
+        'email' => 'test@test.com',
+        'name' => 'test',
+        'age' => '20',
+        'name_on_project' => '4',
+        'english_lvl' => '5',
+    ];
+
+    protected array $userDataNew = [
+        'login' => 'test_name2',
+        'password' => 'test_password2',
+        'email' => 'test2@test.com',
+        'name' => 'test2',
+        'age' => '35',
+        'name_on_project' => '2',
+        'english_lvl' => '7',
+    ];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->admin = User::query()->find(1);
+
+        $this->actingAs($this->admin);
+    }
+
     /**
      * @test
      */
     public function readAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        User::query()->create($this->userData);
+        User::query()->create($this->userDataNew);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('user-all'))
+            ->assertOk()
+            ->assertJson([4 => $this->userData, 5 => $this->userDataNew]);
 
-        $response = $this->json('GET', '/api/user');
+        User::query()->truncate();
 
-        $response->assertStatus(200);
+        $this->json('GET', route('user-all'))
+            ->assertOk()
+            ->assertJson([]);
     }
 
     /**
@@ -27,14 +65,17 @@ class UserTest extends TestCase
      */
     public function readOne(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        /** @var User $user */
+        $user = User::query()->create($this->userData);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('user-create', $user->login))
+            ->assertOk()
+            ->assertJson([4 => $this->userData]);
 
-        $response = $this->json('GET', '/api/user', ['login' => 'user']);
+        User::query()->truncate();
 
-        $response->assertStatus(200);
+        $this->json('GET', route('user-one', $user->login))
+            ->assertNotFound();
     }
 
     /**
@@ -42,23 +83,15 @@ class UserTest extends TestCase
      */
     public function create(): void
     {
-        $userData = [
-            'login' => 'test_name',
-            'password' => 'test_password',
-            'email' => 'test@test.com',
-            'name' => 'test',
-            'age' => '20',
-            'name_on_project' => '4',
-            'english_lvl' => '5',
-        ];
+        $this->json('GET', route('user-one', 'test_name'))
+            ->assertNotFound();
 
-        $response = $this->json('POST', '/api/user', $userData);
+        $this->json('POST', route('user-create'), $this->userData)
+            ->assertCreated();
 
-        $userData = collect($userData)->except('password')->toArray();
-
-        $response
-            ->assertStatus(201)
-            ->assertJson($userData);
+        $this->json('GET', route('user-one', 'test_name'))
+            ->assertOk()
+            ->assertJson(collect($this->userData)->except('password')->toArray());
     }
 
     /**
@@ -66,23 +99,38 @@ class UserTest extends TestCase
      */
     public function deleteUser(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('DELETE', route('user-delete', 'test_name'))
+            ->assertOk();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        /** @var User $user */
+        $user = User::query()->create($this->userData);
 
-        $userData = [
-            'login' => 'test_name',
-            'password' => 'test_password',
-            'email' => 'test@test.com',
-            'name' => 'test',
-            'age' => '20',
-            'name_on_project' => '4',
-            'english_lvl' => '5',
-        ];
+        $this->json('GET', route('user-one', $user->login))
+            ->assertOk();
 
-        $response = $this->json('DELETE', 'api/user/' . $userData['login']);
+        $this->json('DELETE', route('user-delete', $user->login))
+            ->assertOk();
 
-        $response->assertStatus(200);
+        $this->json('DELETE', route('user-delete', $user->login))
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function update(): void
+    {
+        $this->patch(route('user-update', 13), $this->userDataNew)
+            ->assertNotFound();
+
+        /** @var User $user */
+        $user = User::query()->create($this->userData);
+
+        $this->patch(route('user-update', $user->login), [])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->patch(route('user-update', $user->login), $this->userDataNew)
+            ->assertOk()
+            ->assertJson($this->userDataNew);
     }
 }

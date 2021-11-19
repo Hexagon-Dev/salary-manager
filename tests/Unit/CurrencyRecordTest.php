@@ -3,54 +3,82 @@
 namespace Tests\Unit;
 
 use App\Models\CurrencyRecord;
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CurrencyRecordTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function showAll(): void
+    /** @var Authenticatable|User */
+    protected $admin;
+
+    protected array $currency_recordData = [
+        'company_id' => '5',
+        'project_salary' => '50000',
+        'currency_id' => '1',
+        'bank_rate' => '5',
+        'tax_rate' => '2',
+        'net' => '2',
+        'month' => '3',
+        'operation_date' => '2021-11-17 14:44:00',
+    ];
+
+    protected array $currency_recordDataNew = [
+        'company_id' => '2',
+        'project_salary' => '70000',
+        'currency_id' => '2',
+        'bank_rate' => '4',
+        'tax_rate' => '3',
+        'net' => '5',
+        'month' => '7',
+        'operation_date' => '2021-12-18 18:22:12',
+    ];
+
+    protected function setUp(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        parent::setUp();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->admin = User::query()->find(1);
 
-        $response = $this->json('GET', '/api/currency_record');
-
-        $response->assertStatus(200);
+        $this->actingAs($this->admin);
     }
 
     /**
      * @test
      */
-    public function showOne(): void
+    public function readAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        CurrencyRecord::query()->create($this->currency_recordData);
+        CurrencyRecord::query()->create($this->currency_recordDataNew);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('currency_record-all'))
+            ->assertOk()
+            ->assertJson([$this->currency_recordData, $this->currency_recordDataNew]);
 
-        $currency_recordData = [
-            'company_id' => '5',
-            'project_salary' => '50000',
-            'currency_id' => '1',
-            'bank_rate' => '5',
-            'tax_rate' => '2',
-            'net' => '2',
-            'month' => '3',
-            'operation_date' => '2021-11-17 14:44:00',
-        ];
+        CurrencyRecord::query()->truncate();
 
-        $currency_record = CurrencyRecord::query()->create($currency_recordData);
+        $this->json('GET', route('currency_record-all'))
+            ->assertOk()
+            ->assertJson([]);
+    }
 
-        $response = $this->json('GET', '/api/currency_record/' . $currency_record->id);
+    /**
+     * @test
+     */
+    public function readOne(): void
+    {
+        /** @var CurrencyRecord $currency_record */
+        $currency_record = CurrencyRecord::query()->create($this->currency_recordData);
 
-        $response->assertStatus(200);
+        $this->json('GET', route('currency_record-create', $currency_record->id))
+            ->assertOk()
+            ->assertJson([$this->currency_recordData]);
 
-        CurrencyRecord::query()->findOrFail($currency_record->id)->delete();
+        CurrencyRecord::query()->truncate();
+
+        $this->json('GET', route('currency_record-one', $currency_record->id))
+            ->assertNotFound();
     }
 
     /**
@@ -58,29 +86,15 @@ class CurrencyRecordTest extends TestCase
      */
     public function create(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('GET', route('currency_record-one', 1))
+            ->assertNotFound();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('POST', route('currency_record-create'), $this->currency_recordData)
+            ->assertCreated();
 
-        $currency_recordData = [
-            'company_id' => '5',
-            'project_salary' => '50000',
-            'currency_id' => '1',
-            'bank_rate' => '5',
-            'tax_rate' => '2',
-            'net' => '2',
-            'month' => '3',
-            'operation_date' => '2021-11-17 14:44:00',
-        ];
-
-        $response = $this->json('POST', '/api/currency_record', $currency_recordData);
-
-        $response
-            ->assertStatus(201)
-            ->assertJson($currency_recordData);
-
-        CurrencyRecord::query()->findOrFail($response->json()['id'])->delete();
+        $this->json('GET', route('currency_record-one', 1))
+            ->assertOk()
+            ->assertJson($this->currency_recordData);
     }
 
     /**
@@ -88,25 +102,38 @@ class CurrencyRecordTest extends TestCase
      */
     public function deleteCurrencyRecord(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('DELETE', route('currency_record-delete', 1))
+            ->assertOk();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        /** @var CurrencyRecord $currency_record */
+        $currency_record = CurrencyRecord::query()->create($this->currency_recordData);
 
-        $currency_recordData = [
-            'company_id' => '5',
-            'project_salary' => '50000',
-            'currency_id' => '1',
-            'bank_rate' => '5',
-            'tax_rate' => '2',
-            'net' => '2',
-            'month' => '3',
-            'operation_date' => '2021-11-17 14:44:00',
-        ];
+        $this->json('GET', route('currency_record-one', $currency_record->id))
+            ->assertOk();
 
-        $currency_record = CurrencyRecord::query()->create($currency_recordData);
-        $response = $this->json('DELETE', 'api/currency_record/' . $currency_record->id);
+        $this->json('DELETE', route('currency_record-delete', $currency_record->id))
+            ->assertOk();
 
-        $response->assertStatus(200);
+        $this->json('DELETE', route('currency_record-delete', $currency_record->id))
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function update(): void
+    {
+        $this->patch(route('currency_record-update', 13), $this->currency_recordDataNew)
+            ->assertNotFound();
+
+        /** @var CurrencyRecord $currency_record */
+        $currency_record = CurrencyRecord::query()->create($this->currency_recordData);
+
+        $this->patch(route('currency_record-update', $currency_record->id), [])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->patch(route('currency_record-update', $currency_record->id), $this->currency_recordDataNew)
+            ->assertOk()
+            ->assertJson($this->currency_recordDataNew);
     }
 }

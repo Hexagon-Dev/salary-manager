@@ -34,8 +34,8 @@ interface UserServiceInterface
     public function update(User $user, array $attributes): User;
 
     /**
-     * @param User $user
+     * @param string $login
      * @return int
      */
-    public function delete(User $user): int;
+    public function delete(string $login): int;
 }

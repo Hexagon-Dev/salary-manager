@@ -33,8 +33,8 @@ interface NoteServiceInterface
     public function update(Note $note, array $attributes): Note;
 
     /**
-     * @param Note $note
+     * @param int $id
      * @return int
      */
-    public function delete(Note $note): int;
+    public function delete(int $id): int;
 }

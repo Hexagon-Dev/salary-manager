@@ -3,49 +3,73 @@
 namespace Tests\Unit;
 
 use App\Models\Salary;
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SalaryTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function showAll(): void
+    /** @var Authenticatable|User */
+    protected $admin;
+
+    protected array $salaryData = [
+        'amount' => '500',
+        'currency_id' => '1',
+        'user_id' => '2',
+    ];
+
+    protected array $salaryDataNew = [
+        'amount' => '100',
+        'currency_id' => '2',
+        'user_id' => '3',
+    ];
+
+    protected function setUp(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        parent::setUp();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->admin = User::query()->find(1);
 
-        $response = $this->json('GET', '/api/salary');
-
-        $response->assertStatus(200);
+        $this->actingAs($this->admin);
     }
 
     /**
      * @test
      */
-    public function showOne(): void
+    public function readAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        Salary::query()->create($this->salaryData);
+        Salary::query()->create($this->salaryDataNew);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('salary-all'))
+            ->assertOk()
+            ->assertJson([$this->salaryData, $this->salaryDataNew]);
 
-        $salaryData = [
-            'amount' => '500',
-            'currency_id' => '1',
-            'user_id' => '2',
-        ];
+        Salary::query()->truncate();
 
-        $salary = Salary::query()->create($salaryData);
+        $this->json('GET', route('salary-all'))
+            ->assertOk()
+            ->assertJson([]);
+    }
 
-        $response = $this->json('GET', '/api/salary/' . $salary->id);
+    /**
+     * @test
+     */
+    public function readOne(): void
+    {
+        /** @var Salary $salary */
+        $salary = Salary::query()->create($this->salaryData);
 
-        $response->assertStatus(200);
+        $this->json('GET', route('salary-create', $salary->id))
+            ->assertOk()
+            ->assertJson([$this->salaryData]);
 
-        Salary::query()->findOrFail($salary->id)->delete();
+        Salary::query()->truncate();
+
+        $this->json('GET', route('salary-one', $salary->id))
+            ->assertNotFound();
     }
 
     /**
@@ -53,24 +77,15 @@ class SalaryTest extends TestCase
      */
     public function create(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('GET', route('salary-one', 1))
+            ->assertNotFound();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('POST', route('salary-create'), $this->salaryData)
+            ->assertCreated();
 
-        $salaryData = [
-            'amount' => '500',
-            'currency_id' => '1',
-            'user_id' => '2',
-        ];
-
-        $response = $this->json('POST', '/api/salary', $salaryData);
-
-        $response
-            ->assertStatus(201)
-            ->assertJson($salaryData);
-
-        Salary::query()->findOrFail($response->json()['id'])->delete();
+        $this->json('GET', route('salary-one', 1))
+            ->assertOk()
+            ->assertJson($this->salaryData);
     }
 
     /**
@@ -78,20 +93,38 @@ class SalaryTest extends TestCase
      */
     public function deleteSalary(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('DELETE', route('salary-delete', 1))
+            ->assertOk();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        /** @var Salary $salary */
+        $salary = Salary::query()->create($this->salaryData);
 
-        $salaryData = [
-            'amount' => '500',
-            'currency_id' => '1',
-            'user_id' => '2',
-        ];
+        $this->json('GET', route('salary-one', $salary->id))
+            ->assertOk();
 
-        $salary = Salary::query()->create($salaryData);
-        $response = $this->json('DELETE', 'api/salary/' . $salary->id);
+        $this->json('DELETE', route('salary-delete', $salary->id))
+            ->assertOk();
 
-        $response->assertStatus(200);
+        $this->json('DELETE', route('salary-delete', $salary->id))
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function update(): void
+    {
+        $this->patch(route('salary-update', 13), $this->salaryDataNew)
+            ->assertNotFound();
+
+        /** @var Salary $salary */
+        $salary = Salary::query()->create($this->salaryData);
+
+        $this->patch(route('salary-update', $salary->id), [])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->patch(route('salary-update', $salary->id), $this->salaryDataNew)
+            ->assertOk()
+            ->assertJson($this->salaryDataNew);
     }
 }

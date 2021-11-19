@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response;
 
-class CurrencyRecordService implements CurrencyRecordServiceInterface
+class CurrencyRecordService extends AbstractService implements CurrencyRecordServiceInterface
 {
 
     /**
@@ -50,12 +50,12 @@ class CurrencyRecordService implements CurrencyRecordServiceInterface
     }
 
     /**
-     * @param CurrencyRecord $currency_record
+     * @param int $id
      * @return int
      */
-    public function delete(CurrencyRecord $currency_record): int
+    public function delete(int $id): int
     {
-        $currency_record->delete();
+        CurrencyRecord::query()->where('id', $id)->delete();
 
         return Response::HTTP_OK;
     }

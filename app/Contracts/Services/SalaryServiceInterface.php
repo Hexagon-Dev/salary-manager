@@ -33,8 +33,8 @@ interface SalaryServiceInterface
     public function update(Salary $salary, array $attributes): Salary;
 
     /**
-     * @param Salary $salary
+     * @param int $id
      * @return int
      */
-    public function delete(Salary $salary): int;
+    public function delete(int $id): int;
 }

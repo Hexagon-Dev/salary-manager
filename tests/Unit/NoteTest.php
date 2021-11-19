@@ -3,50 +3,75 @@
 namespace Tests\Unit;
 
 use App\Models\Note;
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class NoteTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function showAll(): void
+    /** @var Authenticatable|User */
+    protected $admin;
+
+    protected array $noteData = [
+        'name' => 'TestNote',
+        'date' => '2021-11-17 14:57:12',
+        'manager_id' => '5',
+        'user_id' => '3',
+    ];
+
+    protected array $noteDataNew = [
+        'name' => 'TestNote2',
+        'date' => '2020-05-25 18:34:53',
+        'manager_id' => '3',
+        'user_id' => '2',
+    ];
+
+    protected function setUp(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        parent::setUp();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->admin = User::query()->find(1);
 
-        $response = $this->json('GET', '/api/note');
-
-        $response->assertStatus(200);
+        $this->actingAs($this->admin);
     }
 
     /**
      * @test
      */
-    public function showOne(): void
+    public function readAll(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        Note::query()->create($this->noteData);
+        Note::query()->create($this->noteDataNew);
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('GET', route('note-all'))
+            ->assertOk()
+            ->assertJson([$this->noteData, $this->noteDataNew]);
 
-        $noteData = [
-            'name' => 'TestNote',
-            'date' => '2021-11-17 14:57:12',
-            'manager_id' => '5',
-            'user_id' => '3',
-        ];
+        Note::query()->truncate();
 
-        $note = Note::query()->create($noteData);
+        $this->json('GET', route('note-all'))
+            ->assertOk()
+            ->assertJson([]);
+    }
 
-        $response = $this->json('GET', '/api/note/' . $note->id);
+    /**
+     * @test
+     */
+    public function readOne(): void
+    {
+        /** @var Note $note */
+        $note = Note::query()->create($this->noteData);
 
-        $response->assertStatus(200);
+        $this->json('GET', route('note-create', $note->id))
+            ->assertOk()
+            ->assertJson([$this->noteData]);
 
-        Note::query()->findOrFail($note->id)->delete();
+        Note::query()->truncate();
+
+        $this->json('GET', route('note-one', $note->id))
+            ->assertNotFound();
     }
 
     /**
@@ -54,25 +79,15 @@ class NoteTest extends TestCase
      */
     public function create(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('GET', route('note-one', 1))
+            ->assertNotFound();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        $this->json('POST', route('note-create'), $this->noteData)
+            ->assertCreated();
 
-        $noteData = [
-            'name' => 'TestNote',
-            'date' => '2021-11-17 14:57:12',
-            'manager_id' => '5',
-            'user_id' => '3',
-        ];
-
-        $response = $this->json('POST', '/api/note', $noteData);
-
-        $response
-            ->assertStatus(201)
-            ->assertJson($noteData);
-
-        Note::query()->findOrFail($response->json()['id'])->delete();
+        $this->json('GET', route('note-one', 1))
+            ->assertOk()
+            ->assertJson($this->noteData);
     }
 
     /**
@@ -80,21 +95,38 @@ class NoteTest extends TestCase
      */
     public function deleteNote(): void
     {
-        $user = TestHelper::getUser('superadmin');
+        $this->json('DELETE', route('note-delete', 1))
+            ->assertOk();
 
-        $token = JWTAuth::fromUser($user);
-        $this->withToken($token);
+        /** @var Note $note */
+        $note = Note::query()->create($this->noteData);
 
-        $noteData = [
-            'name' => 'TestNote',
-            'date' => '2021-11-17 14:57:12',
-            'manager_id' => '5',
-            'user_id' => '3',
-        ];
+        $this->json('GET', route('note-one', $note->id))
+            ->assertOk();
 
-        $note = Note::query()->create($noteData);
-        $response = $this->json('DELETE', 'api/note/' . $note->id);
+        $this->json('DELETE', route('note-delete', $note->id))
+            ->assertOk();
 
-        $response->assertStatus(200);
+        $this->json('DELETE', route('note-delete', $note->id))
+            ->assertOk();
+    }
+
+    /**
+     * @test
+     */
+    public function update(): void
+    {
+        $this->patch(route('note-update', 13), $this->noteDataNew)
+            ->assertNotFound();
+
+        /** @var Note $note */
+        $note = Note::query()->create($this->noteData);
+
+        $this->patch(route('note-update', $note->id), [])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->patch(route('note-update', $note->id), $this->noteDataNew)
+            ->assertOk()
+            ->assertJson($this->noteDataNew);
     }
 }

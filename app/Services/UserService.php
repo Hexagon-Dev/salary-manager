@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
-class UserService implements UserServiceInterface
+class UserService extends AbstractService implements UserServiceInterface
 {
     /**
      * @return Collection
@@ -57,12 +57,12 @@ class UserService implements UserServiceInterface
     }
 
     /**
-     * @param User $user
+     * @param string $login
      * @return int
      */
-    public function delete(User $user): int
+    public function delete(string $login): int
     {
-        $user->delete();
+        User::query()->where('login', $login)->delete();
 
         return Response::HTTP_OK;
     }

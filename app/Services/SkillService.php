@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Response;
 
-class SkillService implements SkillServiceInterface
+class SkillService extends AbstractService implements SkillServiceInterface
 {
 
     /**
@@ -50,12 +50,12 @@ class SkillService implements SkillServiceInterface
     }
 
     /**
-     * @param Skill $skill
+     * @param int $id
      * @return int
      */
-    public function delete(Skill $skill): int
+    public function delete(int $id): int
     {
-        $skill->delete();
+        Skill::query()->where('id', $id)->delete();
 
         return Response::HTTP_OK;
     }

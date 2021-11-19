@@ -4,26 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\CurrencyRecordServiceInterface;
 use App\Models\CurrencyRecord;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CurrencyRecordController extends Controller
 {
-    protected CurrencyRecordServiceInterface $service;
-
-    /**
-     * @param CurrencyRecordServiceInterface $service
-     * @param Authenticatable|null $user
-     */
-    public function __construct(CurrencyRecordServiceInterface $service, ?Authenticatable $user = null)
-    {
-        $this->service = $service;
-        $this->user = $user;
-    }
+    protected string $serviceInterface = CurrencyRecordServiceInterface::class;
 
     /**
      * @return JsonResponse
@@ -96,9 +83,7 @@ class CurrencyRecordController extends Controller
             'operation_date' => 'required',
         ]);
 
-        if (! $currency_record = $this->service->readOne($id)) {
-            return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
-        }
+        $currency_record = $this->service->readOne($id);
 
         /** @var CurrencyRecord $currency_record */
         $currency_record = $this->service->update($currency_record, $request->toArray());
@@ -108,13 +93,10 @@ class CurrencyRecordController extends Controller
 
     /**
      * @param int $id
-     * @return JsonResponse
+     * @return int
      */
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): int
     {
-        $currency_record = $this->service->readOne($id);
-
-        /** @var CurrencyRecord $currency_record */
-        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($currency_record));
+        return $this->service->delete($id);
     }
 }

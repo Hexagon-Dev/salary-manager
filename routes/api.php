@@ -35,14 +35,15 @@ Route::prefix('auth')->group(function () {
 });
 
 // USER
-Route::post('user', [UserController::class, 'create']);
+Route::post('user', [UserController::class, 'create'])->name('user-create');
 
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
+    //USER
     Route::prefix('user')->group(function () {
-        Route::get('', [UserController::class, 'readAll']);
-        Route::get('/{user}', [UserController::class, 'readOne']);
-        Route::patch('/{user}', [UserController::class, 'update']);
-        Route::delete('/{user}', [UserController::class, 'delete']);
+        Route::get('', [UserController::class, 'readAll'])->name('user-all');
+        Route::get('/{user}', [UserController::class, 'readOne'])->name('user-one');
+        Route::patch('/{user}', [UserController::class, 'update'])->name('user-update');
+        Route::delete('/{user}', [UserController::class, 'delete'])->name('user-delete');
     });
 
     //ABSENCE
