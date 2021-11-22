@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use Exception;
+use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
@@ -39,13 +40,13 @@ class AuthServiceProvider extends ServiceProvider
                     $user = JWT::decode($token, $secret, array("HS256"));
                 } catch (ExpiredException $e) {
                     throw new ExpiredException('token_expired');
-                } catch (SignatureInvalidException $e) {
-                    throw new SignatureInvalidException('token_invalid');
+                } catch (Exception $e) {
+                    throw new Exception('token_invalid');
                 }
                 return User::query()->where("id", $user->data->id)->first();
             }
             if ($request->path() !== 'api/login') {
-                throw new Exception('token_absent');
+                throw new BeforeValidException('token_absent');
             }
         });
     }

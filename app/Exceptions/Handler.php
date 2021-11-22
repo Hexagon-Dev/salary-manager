@@ -2,6 +2,9 @@
 
 namespace App\Exceptions;
 
+use Firebase\JWT\BeforeValidException;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,6 +46,21 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'errors' => $e->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        });
+        $this->renderable(function (ExpiredException $e) {
+            return response()->json([
+                'error' => 'token_expired',
+            ], Response::HTTP_UNAUTHORIZED);
+        });
+        $this->renderable(function (SignatureInvalidException $e) {
+            return response()->json([
+                'error' => 'token_invalid',
+            ], Response::HTTP_UNAUTHORIZED);
+        });
+        $this->renderable(function (BeforeValidException $e) {
+            return response()->json([
+                'error' => 'token_absent',
+            ], Response::HTTP_UNAUTHORIZED);
         });
     }
 }
