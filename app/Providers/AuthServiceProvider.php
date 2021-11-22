@@ -43,11 +43,12 @@ class AuthServiceProvider extends ServiceProvider
                 } catch (Exception $e) {
                     throw new Exception('token_invalid');
                 }
-                return User::query()->where("id", $user->data->id)->first();
             }
             if ($request->path() !== 'api/login') {
                 throw new BeforeValidException('token_absent');
             }
+
+            return User::query()->where("id", $user->data->id)->first();
         });
     }
 }
