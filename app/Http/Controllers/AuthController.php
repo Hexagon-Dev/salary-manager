@@ -2,40 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Models\User;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Throwable;
+use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
+use Firebase\JWT\JWT;
 
 class AuthController extends Controller
 {
     /**
-     * @param Authenticatable|null $user
-     * @throws Throwable
-     */
-    public function __construct(?Authenticatable $user = null)
-    {
-        parent::__construct($user);
-        $this->middleware('auth:api', ['except' => ['login']]);
-    }
-
-    /**
-     * Get a JWT via given credentials.
+     * @OA\Post(
+     *      path="/api/login",
+     *      operationId="login",
+     *      tags={"Auth"},
+     *      summary="Logs in user.",
+     *      description="Returns token in responce.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="login",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="password",
+     *                      type="string"
+     *                  ),
+     *                  example={"login": "admin", "password": "admin"}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns token.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      )
+     *     )
      *
+     * @param Request $request
      * @return JsonResponse
+     * @throws Exception
      */
-    public function login(): JsonResponse
+    public function login(Request $request): JsonResponse
     {
-        $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $login = $request->get('login','');
+        $password = $request->get('password','');
+        $user = User::query()->where(['login' => $login])->first();
+        if (!$user) {
+            return response()->json(['error' => 'login or password is incorrect'], Response::HTTP_UNAUTHORIZED);
         }
-
-        return $this->respondWithToken($token);
+        if (Hash::check($password, $user->password)) {
+            unset($user['password']);
+            cache('user-' . $user['id'], $user);
+            return response()->json(['token' => $this->getJWTToken($user)]);
+        }
+        return response()->json(['error' => 'login or password is incorrect'], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
-     * Log the user out (Invalidate the token).
+     * @OA\Post(
+     *      path="/api/logout",
+     *      operationId="logout",
+     *      tags={"Auth"},
+     *      summary="Logs user out.",
+     *      description="Invalidates the token.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="Logs user out.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      *
      * @return JsonResponse
      */
@@ -43,6 +95,27 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'successfully logged out']);
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getJWTToken($value): string
+    {
+        $time = time();
+        $payload = [
+            'iat' => $time,
+            'nbf' => $time,
+            'exp' => $time+7200,
+            'data' => [
+                'id' => $value['id'],
+                'username' => $value['user_name']
+            ]
+        ];
+        $key =  env('JWT_SECRET');
+        $alg = 'HS256';
+        return JWT::encode($payload,$key,$alg);
     }
 }

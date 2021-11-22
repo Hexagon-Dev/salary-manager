@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\UserServiceInterface;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -278,10 +276,14 @@ class UserController extends Controller
      *     )
      *
      * @param string $login
-     * @return int
+     * @return JsonResponse
      */
-    public function delete(string $login): int
+    public function delete(string $login): JsonResponse
     {
-        return $this->service->delete($login);
+        if (!$this->user->can(['delete', 'user'])) {
+            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
+        }
+
+        return response()->json(['message' => 'successfully_deleted'], $this->service->delete($login));
     }
 }

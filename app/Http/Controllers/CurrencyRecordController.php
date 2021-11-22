@@ -13,6 +13,29 @@ class CurrencyRecordController extends Controller
     protected string $serviceInterface = CurrencyRecordServiceInterface::class;
 
     /**
+     * @OA\Get(
+     *      path="/api/currency_record",
+     *      operationId="getCurrencyRecordList",
+     *      tags={"CurrencyRecords"},
+     *      summary="Get list of currency records.",
+     *      description="Returns list of currency records.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns list of currency records.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @return JsonResponse
      */
     public function readAll(): JsonResponse
@@ -25,6 +48,78 @@ class CurrencyRecordController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *      path="/api/currency_record",
+     *      operationId="createCurrencyRecord",
+     *      tags={"CurrencyRecords"},
+     *      summary="Creates currency list.",
+     *      description="Creates currency list.",
+     *      security={
+     *          {"Bearer Token": {}},
+     *      },
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="company_id",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="project_salary",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="currency_id",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="bank_rate",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="tax_rate",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="net",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="month",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="operation_date",
+     *                      type="string"
+     *                  ),
+     *                  example={
+     *                      "company_id": "4",
+     *                      "project_salary": "50000",
+     *                      "currency_id": "1",
+     *                      "bank_rate": "5",
+     *                      "tax_rate": "8",
+     *                      "net": "6",
+     *                      "month": "3",
+     *                      "operation_date": "2006-11-22 12:00:00",
+     *                  }
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Returns currency record.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -49,6 +144,38 @@ class CurrencyRecordController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *      path="/api/currency_record/{id}",
+     *      operationId="getCurrencyRecord",
+     *      tags={"CurrencyRecords"},
+     *      summary="Get one currency record.",
+     *      description="Returns one currency record.",
+     *      security={
+     *        {"Bearer Token": {}},
+     *      },
+     *     @OA\Parameter(
+     *          name="id",
+     *          description="Currency record id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns currency record.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param int $id
      * @return JsonResponse
      */
@@ -62,6 +189,87 @@ class CurrencyRecordController extends Controller
     }
 
     /**
+     * @OA\Patch (
+     *      path="/api/currency_record/{id}",
+     *      operationId="updateCurrencyRecord",
+     *      tags={"CurrencyRecords"},
+     *      summary="Updates currency record.",
+     *      description="Updates currency record parameters that were given in request.",
+     *      security={
+     *        {"Bearer Token": {}},
+     *      },
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Currency record id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="company_id",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="project_salary",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="currency_id",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="bank_rate",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="tax_rate",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="net",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="month",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="operation_date",
+     *                      type="string"
+     *                  ),
+     *                  example={
+     *                      "company_id": "4",
+     *                      "project_salary": "50000",
+     *                      "currency_id": "1",
+     *                      "bank_rate": "5",
+     *                      "tax_rate": "8",
+     *                      "net": "6",
+     *                      "month": "3",
+     *                      "operation_date": "2006-11-22 12:00:00",
+     *                  }
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns currency record.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param Request $request
      * @param int $id
      * @return JsonResponse
@@ -92,6 +300,38 @@ class CurrencyRecordController extends Controller
     }
 
     /**
+     * @OA\Delete (
+     *      path="/api/currency_record/{id}",
+     *      operationId="deleteCurrencyRecord",
+     *      tags={"CurrencyRecords"},
+     *      summary="Deletes currency record.",
+     *      description="Deletes currency record.",
+     *      security={
+     *        {"Bearer Token": {}},
+     *      },
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Currency record id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Currency record deleted.",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     *
      * @param int $id
      * @return int
      */

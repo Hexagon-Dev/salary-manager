@@ -2,8 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Exception;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -20,9 +26,27 @@ class AuthServiceProvider extends ServiceProvider
      * Register any authentication / authorization services.
      *
      * @return void
+     * @throws Exception
      */
     public function boot()
     {
-        //
+        Auth::viaRequest('custom-jwt', function (Request $request) {
+            $token = $request->bearerToken();
+            $secret = env('JWT_SECRET');
+
+            if ($token) {
+                try {
+                    $user = JWT::decode($token, $secret, array("HS256"));
+                } catch (ExpiredException $e) {
+                    throw new ExpiredException('token_expired');
+                } catch (SignatureInvalidException $e) {
+                    throw new SignatureInvalidException('token_invalid');
+                }
+                return User::query()->where("id", $user->data->id)->first();
+            }
+            if ($request->path() !== 'api/login') {
+                throw new Exception('token_absent');
+            }
+        });
     }
 }

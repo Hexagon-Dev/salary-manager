@@ -90,7 +90,7 @@
                 ]
             }
         },
-        "/api/absence/{absence}": {
+        "/api/absence/{id}": {
             "get": {
                 "tags": [
                     "Absences"
@@ -126,6 +126,41 @@
                     }
                 ]
             },
+            "delete": {
+                "tags": [
+                    "Absences"
+                ],
+                "summary": "Deletes absence.",
+                "description": "Deletes absence.",
+                "operationId": "deleteAbsence",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Absence id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Absence deleted."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
             "patch": {
                 "tags": [
                     "Absences"
@@ -138,6 +173,274 @@
                         "name": "id",
                         "in": "path",
                         "description": "Absence id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "type": {
+                                        "type": "integer"
+                                    },
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "type": "2",
+                                    "user_id": "4"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns absence."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logs in user.",
+                "description": "Returns token in responce.",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "login": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "login": "admin",
+                                    "password": "admin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns token."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logs user out.",
+                "description": "Invalidates the token.",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Logs user out."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/company": {
+            "get": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Get list of companies.",
+                "description": "Returns list of companies.",
+                "operationId": "getCompanyList",
+                "responses": {
+                    "200": {
+                        "description": "Returns list of companies."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Creates company.",
+                "description": "Creates company.",
+                "operationId": "createCompany",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "contacts": {
+                                        "type": "string"
+                                    },
+                                    "create_time": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "type": "Heroku",
+                                    "contacts": "admin@heroku.com",
+                                    "create_time": "2006-11-22 12:00:00"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns company."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/company/{id}": {
+            "get": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Get one company.",
+                "description": "Returns one company.",
+                "operationId": "getCompany",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns company."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Deletes company.",
+                "description": "Deletes company.",
+                "operationId": "deleteCompany",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Company deleted."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Updates company.",
+                "description": "Updates company parameters that were given in request.",
+                "operationId": "updateCompany",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company id",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -162,19 +465,94 @@
                 ]
             }
         },
-        "/api/absence/{id}": {
-            "delete": {
+        "/api/currency": {
+            "get": {
                 "tags": [
-                    "Absences"
+                    "Currencies"
                 ],
-                "summary": "Deletes absence.",
-                "description": "Deletes absence.",
-                "operationId": "deleteAbsence",
+                "summary": "Get list of currencies.",
+                "description": "Returns list of currencies.",
+                "operationId": "getCurrencyList",
+                "responses": {
+                    "200": {
+                        "description": "Returns list of currencies."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Currencies"
+                ],
+                "summary": "Creates currency.",
+                "description": "Creates currency.",
+                "operationId": "createCurrency",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "rate": {
+                                        "type": "string"
+                                    },
+                                    "symbol": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "dollar",
+                                    "rate": "5",
+                                    "symbol": "$"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns currency."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/currency/{id}": {
+            "get": {
+                "tags": [
+                    "Currencies"
+                ],
+                "summary": "Get one currency.",
+                "description": "Returns one currency.",
+                "operationId": "getCurrency",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Absence id",
+                        "description": "Currency id",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -183,7 +561,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Abstence deleted."
+                        "description": "Returns currency."
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -197,32 +575,80 @@
                         "Bearer Token": []
                     }
                 ]
-            }
-        },
-        "/api/auth/login": {
-            "post": {
+            },
+            "delete": {
                 "tags": [
-                    "Auth"
+                    "Currencies"
                 ],
-                "summary": "Responces with token.",
-                "description": "Responces with token.",
-                "operationId": "loginAuth",
+                "summary": "Deletes currency.",
+                "description": "Deletes currency.",
+                "operationId": "deleteCurrency",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Currency id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Currency deleted."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Currencies"
+                ],
+                "summary": "Updates currency.",
+                "description": "Updates currency parameters that were given in request.",
+                "operationId": "updateCurrency",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "email": {
+                                    "name": {
                                         "type": "string"
                                     },
-                                    "password": {
+                                    "rate": {
+                                        "type": "string"
+                                    },
+                                    "symbol": {
                                         "type": "string"
                                     }
                                 },
                                 "type": "object",
                                 "example": {
-                                    "email": "user@example.com",
-                                    "password": "user"
+                                    "name": "dollar",
+                                    "rate": "5",
+                                    "symbol": "$"
                                 }
                             }
                         }
@@ -230,25 +656,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Returns JWT token."
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
-                    }
-                }
-            }
-        },
-        "/api/auth/me": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Gets the authenticated user.",
-                "description": "Gets the authenticated user.",
-                "operationId": "meAuth",
-                "responses": {
-                    "200": {
-                        "description": "Returns authenticated user."
+                        "description": "Returns currency."
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -264,17 +672,86 @@
                 ]
             }
         },
-        "/api/auth/logout": {
-            "post": {
+        "/api/currency_record": {
+            "get": {
                 "tags": [
-                    "Auth"
+                    "CurrencyRecords"
                 ],
-                "summary": "Logs out.",
-                "description": "Logs out.",
-                "operationId": "logoutAuth",
+                "summary": "Get list of currency records.",
+                "description": "Returns list of currency records.",
+                "operationId": "getCurrencyRecordList",
                 "responses": {
                     "200": {
-                        "description": "Logs out."
+                        "description": "Returns list of currency records."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "CurrencyRecords"
+                ],
+                "summary": "Creates currency list.",
+                "description": "Creates currency list.",
+                "operationId": "createCurrencyRecord",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "company_id": {
+                                        "type": "integer"
+                                    },
+                                    "project_salary": {
+                                        "type": "integer"
+                                    },
+                                    "currency_id": {
+                                        "type": "integer"
+                                    },
+                                    "bank_rate": {
+                                        "type": "integer"
+                                    },
+                                    "tax_rate": {
+                                        "type": "integer"
+                                    },
+                                    "net": {
+                                        "type": "integer"
+                                    },
+                                    "month": {
+                                        "type": "integer"
+                                    },
+                                    "operation_date": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "company_id": "4",
+                                    "project_salary": "50000",
+                                    "currency_id": "1",
+                                    "bank_rate": "5",
+                                    "tax_rate": "8",
+                                    "net": "6",
+                                    "month": "3",
+                                    "operation_date": "2006-11-22 12:00:00"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns currency record."
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -290,17 +767,756 @@
                 ]
             }
         },
-        "/api/auth/refresh": {
-            "post": {
+        "/api/currency_record/{id}": {
+            "get": {
                 "tags": [
-                    "Auth"
+                    "CurrencyRecords"
                 ],
-                "summary": "Refreshes token.",
-                "description": "Token expires in 1 hour. You can refresh it here.",
-                "operationId": "refreshAuth",
+                "summary": "Get one currency record.",
+                "description": "Returns one currency record.",
+                "operationId": "getCurrencyRecord",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Currency record id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Returns new token."
+                        "description": "Returns currency record."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "CurrencyRecords"
+                ],
+                "summary": "Deletes currency record.",
+                "description": "Deletes currency record.",
+                "operationId": "deleteCurrencyRecord",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Currency record id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Currency record deleted."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "CurrencyRecords"
+                ],
+                "summary": "Updates currency record.",
+                "description": "Updates currency record parameters that were given in request.",
+                "operationId": "updateCurrencyRecord",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Currency record id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "company_id": {
+                                        "type": "integer"
+                                    },
+                                    "project_salary": {
+                                        "type": "integer"
+                                    },
+                                    "currency_id": {
+                                        "type": "integer"
+                                    },
+                                    "bank_rate": {
+                                        "type": "integer"
+                                    },
+                                    "tax_rate": {
+                                        "type": "integer"
+                                    },
+                                    "net": {
+                                        "type": "integer"
+                                    },
+                                    "month": {
+                                        "type": "integer"
+                                    },
+                                    "operation_date": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "company_id": "4",
+                                    "project_salary": "50000",
+                                    "currency_id": "1",
+                                    "bank_rate": "5",
+                                    "tax_rate": "8",
+                                    "net": "6",
+                                    "month": "3",
+                                    "operation_date": "2006-11-22 12:00:00"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns currency record."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/note": {
+            "get": {
+                "tags": [
+                    "Notes"
+                ],
+                "summary": "Get list of notes.",
+                "description": "Returns list of notes.",
+                "operationId": "getNoteList",
+                "responses": {
+                    "200": {
+                        "description": "Returns list of notes."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Notes"
+                ],
+                "summary": "Creates note.",
+                "description": "Creates note.",
+                "operationId": "createNote",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "integer"
+                                    },
+                                    "date": {
+                                        "type": "integer"
+                                    },
+                                    "manager_id": {
+                                        "type": "integer"
+                                    },
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "Test",
+                                    "date": "2021-11-16 12:00:40",
+                                    "manager_id": "6",
+                                    "user_id": "8"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns note."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/note/{id}": {
+            "get": {
+                "tags": [
+                    "Notes"
+                ],
+                "summary": "Get one note.",
+                "description": "Returns one note.",
+                "operationId": "getNote",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Note id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns note."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Notes"
+                ],
+                "summary": "Deletes note.",
+                "description": "Deletes note.",
+                "operationId": "deleteNote",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Note id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Note deleted."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Notes"
+                ],
+                "summary": "Updates note.",
+                "description": "Updates note parameters that were given in request.",
+                "operationId": "updateNote",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Note id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "integer"
+                                    },
+                                    "date": {
+                                        "type": "integer"
+                                    },
+                                    "manager_id": {
+                                        "type": "integer"
+                                    },
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "Test",
+                                    "date": "2021-11-16 12:00:40",
+                                    "manager_id": "6",
+                                    "user_id": "8"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns absence."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/salary": {
+            "get": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Get list of salaries.",
+                "description": "Returns list of salaries.",
+                "operationId": "getSalaryList",
+                "responses": {
+                    "200": {
+                        "description": "Returns list of salaries."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Creates salary.",
+                "description": "Creates salary.",
+                "operationId": "createSalary",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount": {
+                                        "type": "integer"
+                                    },
+                                    "currency_id": {
+                                        "type": "integer"
+                                    },
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "amount": "2000",
+                                    "currency_id": "2",
+                                    "user_id": "6"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns salary."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/salary/{id}": {
+            "get": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Get one salary.",
+                "description": "Returns one salary.",
+                "operationId": "getSalary",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Salary id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns salary."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Deletes salary.",
+                "description": "Deletes salary.",
+                "operationId": "deleteSalary",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Salary id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Salary deleted."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Salaries"
+                ],
+                "summary": "Updates salary.",
+                "description": "Updates salary parameters that were given in request.",
+                "operationId": "updateSalary",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Salary id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount": {
+                                        "type": "integer"
+                                    },
+                                    "currency_id": {
+                                        "type": "integer"
+                                    },
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "amount": "2000",
+                                    "currency_id": "2",
+                                    "user_id": "6"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns salary."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/skill": {
+            "get": {
+                "tags": [
+                    "Skills"
+                ],
+                "summary": "Get list of skills.",
+                "description": "Returns list of skills.",
+                "operationId": "getSkillList",
+                "responses": {
+                    "200": {
+                        "description": "Returns list of skills."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Skills"
+                ],
+                "summary": "Creates skill.",
+                "description": "Creates skill.",
+                "operationId": "createSkill",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "strinng"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "swimming"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns skill."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            }
+        },
+        "/api/skill/{id}": {
+            "get": {
+                "tags": [
+                    "Skills"
+                ],
+                "summary": "Get one skill.",
+                "description": "Returns one skill.",
+                "operationId": "getSkill",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Skill id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns skill."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Skills"
+                ],
+                "summary": "Deletes skill.",
+                "description": "Deletes skill.",
+                "operationId": "deleteSkill",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Skill id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Skill deleted."
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Skills"
+                ],
+                "summary": "Updates skill.",
+                "description": "Updates skill parameters that were given in request.",
+                "operationId": "updateSkill",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Skill id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "strinng"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "swimming"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns skill."
                     },
                     "401": {
                         "description": "Unauthenticated"

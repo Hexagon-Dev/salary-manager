@@ -33,6 +33,7 @@ class Controller extends BaseController
             $this->service = app()->make($this->serviceInterface);
         }
     }
+
     /**
      * @SWG\Swagger(
      *   schemes={"http"},

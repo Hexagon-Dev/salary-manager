@@ -106,7 +106,7 @@ class AbsenceController extends Controller
 
     /**
      * @OA\Get(
-     *      path="/api/absence/{absence}",
+     *      path="/api/absence/{id}",
      *      operationId="getAbsence",
      *      tags={"Absences"},
      *      summary="Get one absence.",
@@ -151,7 +151,7 @@ class AbsenceController extends Controller
 
     /**
      * @OA\Patch (
-     *      path="/api/absence/{absence}",
+     *      path="/api/absence/{id}",
      *      operationId="updateAbsence",
      *      tags={"Absences"},
      *      summary="Updates absence.",
@@ -166,6 +166,22 @@ class AbsenceController extends Controller
      *          in="path",
      *          @OA\Schema(
      *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="type",
+     *                      type="integer"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="user_id",
+     *                      type="integer"
+     *                  ),
+     *                  example={"type": "2", "user_id": "4"}
+     *              )
      *          )
      *      ),
      *      @OA\Response(
@@ -226,7 +242,7 @@ class AbsenceController extends Controller
      *      ),
      *      @OA\Response(
      *          response=200,
-     *          description="Abstence deleted.",
+     *          description="Absence deleted.",
      *       ),
      *      @OA\Response(
      *          response=401,
