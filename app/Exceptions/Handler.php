@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
                 'error' => 'token_expired',
             ], Response::HTTP_UNAUTHORIZED);
         });
-        $this->renderable(function (SignatureInvalidException $e) {
+        $this->renderable(function (\Exception $e) {
             return response()->json([
                 'error' => 'token_invalid',
             ], Response::HTTP_UNAUTHORIZED);
