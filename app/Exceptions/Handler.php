@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Firebase\JWT\BeforeValidException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -49,6 +50,9 @@ class Handler extends ExceptionHandler
         });
         $this->renderable(function (HttpException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+        });
+        $this->renderable(function (RoleDoesNotExist $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         });
     }
 }

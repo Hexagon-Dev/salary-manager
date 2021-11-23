@@ -6,6 +6,7 @@ use App\Contracts\Services\UserServiceInterface;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -35,11 +36,18 @@ class UserService extends AbstractService implements UserServiceInterface
      */
     public function create(array $attributes): User
     {
-        $attributes['password'] = Hash::make($attributes['password']);
+        $role = $attributes['role'];
+        unset($attributes['role']);
+
+        try {
+            $roleModel = Role::findByName($role);
+        } catch (RoleDoesNotExist $e) {
+            throw new RoleDoesNotExist('Role ' . $role . ' does not exist');
+        }
 
         /** @var User $user */
         $user = User::query()->create($attributes);
-        $user->assignRole(Role::findByName('user'));
+        $user->assignRole($roleModel);
 
         return $user;
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\AbsenceServiceInterface;
+use App\Http\Requests\CreateAbsenceRequest;
 use App\Models\Absence;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -85,19 +86,12 @@ class AbsenceController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateAbsenceRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateAbsenceRequest $request): JsonResponse
     {
-        $this->checkPermission('create');
-
-        $request->validate([
-            'type' => 'required|numeric',
-            'user_id' => 'required|numeric',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**

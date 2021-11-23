@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 // AUTH
 Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
 
 Route::group(['middleware' => ['auth']], function() {
 // USER

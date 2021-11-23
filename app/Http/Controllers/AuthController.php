@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 use Firebase\JWT\JWT;
 
@@ -45,55 +47,38 @@ class AuthController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param LoginUserRequest $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function login(Request $request): JsonResponse
+    public function login(LoginUserRequest $request): JsonResponse
     {
-        $login = $request->get('login','');
-        $password = $request->get('password','');
-        $user = User::query()->where(['login' => $login])->first();
+        $user = User::query()->where(['login' => $request->validated()['login']])->first();
+
         if (!$user) {
             return response()->json(['error' => 'login or password is incorrect'], Response::HTTP_UNAUTHORIZED);
         }
-        if (Hash::check($password, $user->password)) {
+
+        if (Hash::check($request->validated()['password'], $user->password)) {
             unset($user['password']);
             cache('user-' . $user['id'], $user);
             return response()->json(['token' => $this->getJWTToken($user)]);
         }
+
         return response()->json(['error' => 'login or password is incorrect'], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
-     * @OA\Post(
-     *      path="/api/logout",
-     *      operationId="logout",
-     *      tags={"Auth"},
-     *      summary="Logs user out.",
-     *      description="Invalidates the token.",
-     *      security={
-     *          {"Bearer Token": {}},
-     *      },
-     *      @OA\Response(
-     *          response=200,
-     *          description="Logs user out.",
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     *
-     * @return JsonResponse
+     * @param RegisterUserRequest $request
+     * @return User
      */
-    public function logout(): JsonResponse
+    public function register(RegisterUserRequest $request): User
     {
-        return response()->json(['message' => 'successfully logged out']);
+        /** @var User $user */
+        $user = User::query()->create($request->validated());
+        $user->assignRole(Role::findByName('user'));
+
+        return $user;
     }
 
     /**
@@ -106,7 +91,7 @@ class AuthController extends Controller
         $payload = [
             'iat' => $time,
             'nbf' => $time,
-            'exp' => $time+7200,
+            'exp' => $time + 7200,
             'data' => [
                 'id' => $value['id'],
                 'username' => $value['user_name']

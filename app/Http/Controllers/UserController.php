@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\UserServiceInterface;
+use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -108,21 +110,12 @@ class UserController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateUserRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateUserRequest $request): JsonResponse
     {
-        $request->validate([
-            'login' => 'required|max:32|min:6|unique:users',
-            'email' => 'required|max:32|min:6|unique:users',
-            'password' => 'required|max:32|min:8',
-            'name' => 'max:255',
-            'age' => 'max:45',
-            'role' => 'max:45',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**
@@ -213,25 +206,20 @@ class UserController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateUserRequest $request
      * @param string $login
      * @return JsonResponse
      */
-    public function update(Request $request, string $login): JsonResponse
+    public function update(UpdateUserRequest $request, string $login): JsonResponse
     {
         $this->checkPermission('update');
 
-        $request->validate([
-            'email' => 'required',
-            'name' => 'max:32',
-            'age' => 'max:32',
-            'role' => 'max:32',
-        ]);
+        $request->validated();
 
         $user = $this->service->readOne($login);
 
         /** @var User $user */
-        $user = $this->service->update($user, $request->toArray());
+        $user = $this->service->update($user, $request->safe()->toArray());
 
         return response()->json($user, Response::HTTP_OK);
     }
