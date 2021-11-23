@@ -5,12 +5,11 @@ namespace App\Providers;
 use App\Models\User;
 use Exception;
 use Firebase\JWT\BeforeValidException;
-use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
-use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -37,18 +36,14 @@ class AuthServiceProvider extends ServiceProvider
 
             if ($token) {
                 try {
-                    $user = JWT::decode($token, $secret, array("HS256"));
-                } catch (ExpiredException $e) {
-                    throw new ExpiredException('token_expired');
-                } catch (Exception $e) {
-                    throw new Exception('token_invalid');
+                    $user = JWT::decode($token, $secret, ["HS256"]);
+                } catch (Throwable $e) {
+                    throw new BeforeValidException($e->getMessage());
                 }
-            }
-            if ($request->path() !== 'api/login') {
-                throw new BeforeValidException('token_absent');
+                return User::query()->where("id", $user->data->id)->first();
             }
 
-            return User::query()->where("id", $user->data->id)->first();
+            return null;
         });
     }
 }
