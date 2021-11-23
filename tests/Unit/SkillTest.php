@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SkillTest extends TestCase
 {
