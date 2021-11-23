@@ -1,16 +1,25 @@
 # Salary Manager
-## Permissions managment
-PermissionSeeder creates all the permissions called by table names and permissions called: create, read, update, delete.
-  Also it creates 4 roles called: superadmin, admin, user and guest.
-For example to allow access to update skill table, give same permissions like this ['update', 'skill']. 
+## Installation
+*  Make sure that you have docker installed.
+*  Execute `docker-compose up`
+*  Go to `localhost` and here you are.
+## Permissions management
+PermissionSeeder creates all the permissions called by table names and permissions called: create, read, update, delete.  
+Also, it creates 4 roles called: superadmin, admin, user and guest.  
+Superadmin has all permissions. Guest has no permissions.  
+For example to allow access to update skill table, give these permissions: 'update', 'skill'.
+## Available permissions
+*  create
+*  read
+*  update
+*  delete
+*  table_name
 ## Methods:
 ### Auth:
 | Method | URI | Description |
 |----------------|---------|----------------|
-| **POST** | api/auth/login | Get a JWT via given credentials. |
-| **POST** | api/auth/logout | Log the user out (Invalidate the token). |
-| **POST** | api/auth/me | Get the authenticated User. |
-| **POST** | api/auth/refresh | Refresh a token. |
+| **POST** | api/login | Get a JWT via given credentials. |
+| **POST** | api/register | Register new user, responses with same data. |
 ### Tables:
 | Method | URI | Description |
 |----------------|---------|----------------|
