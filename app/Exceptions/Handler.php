@@ -6,6 +6,7 @@ use Firebase\JWT\BeforeValidException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -45,6 +46,9 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'error' => $e->getMessage(),
             ], Response::HTTP_UNAUTHORIZED);
+        });
+        $this->renderable(function (HttpException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         });
     }
 }

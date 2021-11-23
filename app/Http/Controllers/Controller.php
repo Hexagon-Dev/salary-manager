@@ -9,6 +9,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Controller extends BaseController
@@ -68,4 +70,15 @@ class Controller extends BaseController
      *     description="API Endpoints of Projects"
      * )
      */
+
+
+    /**
+     * @param string $operation
+     */
+    protected function checkPermission(string $operation): void
+    {
+        if (!$this->user->can($operation)) {
+            throw new HttpException(Response::HTTP_FORBIDDEN);
+        }
+    }
 }

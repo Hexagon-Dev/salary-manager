@@ -43,9 +43,7 @@ class NoteController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        if (!$this->user->can(['read', 'note'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('read');
 
         return response()->json($this->service->readAll(), Response::HTTP_OK);
     }
@@ -103,9 +101,7 @@ class NoteController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
-        if (!$this->user->can(['create', 'note'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('create');
 
         $request->validate([
             'name' => 'required|max:255',
@@ -155,9 +151,7 @@ class NoteController extends Controller
      */
     public function readOne(int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'note'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('read');
 
         return response()->json($this->service->readOne($id), Response::HTTP_OK);
     }
@@ -225,9 +219,7 @@ class NoteController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'note'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('update');
 
         $request->validate([
             'name' => 'required|max:255',
@@ -282,6 +274,8 @@ class NoteController extends Controller
      */
     public function delete(int $id): int
     {
+        $this->checkPermission('delete');
+
         return $this->service->delete($id);
     }
 }

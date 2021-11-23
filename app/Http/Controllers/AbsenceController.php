@@ -40,9 +40,7 @@ class AbsenceController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('read');
 
         return response()->json($this->service->readAll(), Response::HTTP_OK);
     }
@@ -92,9 +90,7 @@ class AbsenceController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
-        if (!$this->user->can(['create', 'absence'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('create');
 
         $request->validate([
             'type' => 'required|numeric',
@@ -142,9 +138,7 @@ class AbsenceController extends Controller
      */
     public function readOne(int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('read');
 
         return response()->json($this->service->readOne($id), Response::HTTP_OK);
     }
@@ -204,9 +198,7 @@ class AbsenceController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        if (!$this->user->can(['read', 'absence'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('update');
 
         $request->validate([
             'type' => 'required|numeric',
@@ -259,6 +251,8 @@ class AbsenceController extends Controller
      */
     public function delete(int $id): int
     {
+        $this->checkPermission('delete');
+
         return $this->service->delete($id);
     }
 }

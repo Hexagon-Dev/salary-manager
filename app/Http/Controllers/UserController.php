@@ -40,9 +40,7 @@ class UserController extends Controller
      */
     public function readAll(): JsonResponse
     {
-        if (!$this->user->can(['read', 'user'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('read');
 
         return response()->json($this->service->readAll(), Response::HTTP_OK);
     }
@@ -169,9 +167,7 @@ class UserController extends Controller
      */
     public function readOne(string $login): JsonResponse
     {
-        if (!$this->user->can(['read', 'user'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('read');
 
         return response()->json($this->service->readOne($login), Response::HTTP_OK);
     }
@@ -223,9 +219,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $login): JsonResponse
     {
-        if (!$this->user->can(['update', 'user'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('update');
 
         $request->validate([
             'email' => 'required',
@@ -280,9 +274,7 @@ class UserController extends Controller
      */
     public function delete(string $login): JsonResponse
     {
-        if (!$this->user->can(['delete', 'user'])) {
-            return response()->json(['error' => 'access_denied'], Response::HTTP_FORBIDDEN);
-        }
+        $this->checkPermission('delete');
 
         return response()->json(['message' => 'successfully_deleted'], $this->service->delete($login));
     }
