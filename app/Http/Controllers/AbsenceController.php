@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\AbsenceServiceInterface;
-use App\Http\Requests\CreateAbsenceRequest;
+use App\Http\Requests\Create\CreateAbsenceRequest;
+use App\Http\Requests\Update\UpdateAbsenceRequest;
 use App\Models\Absence;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AbsenceController extends Controller
@@ -186,23 +186,16 @@ class AbsenceController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateAbsenceRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateAbsenceRequest $request, int $id): JsonResponse
     {
-        $this->checkPermission('update');
-
-        $request->validate([
-            'type' => 'required|numeric',
-            'user_id' => 'required|numeric',
-        ]);
-
         $absence = $this->service->readOne($id);
 
         /** @var Absence $absence */
-        $absence = $this->service->update($absence, $request->toArray());
+        $absence = $this->service->update($absence, $request->validated());
 
         return response()->json($absence, Response::HTTP_OK);
     }

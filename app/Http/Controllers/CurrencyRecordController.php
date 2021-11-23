@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\CurrencyRecordServiceInterface;
+use App\Http\Requests\Create\CreateCurrencyRecordRequest;
+use App\Http\Requests\Update\UpdateCurrencyRecordRequest;
 use App\Models\CurrencyRecord;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CurrencyRecordController extends Controller
@@ -118,25 +119,12 @@ class CurrencyRecordController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateCurrencyRecordRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateCurrencyRecordRequest $request): JsonResponse
     {
-        $this->checkPermission('create');
-
-        $request->validate([
-            'company_id' => 'required|numeric',
-            'project_salary' => 'required|numeric',
-            'currency_id' => 'required|numeric',
-            'bank_rate' => 'required',
-            'tax_rate' => 'required',
-            'net' => 'required',
-            'month' => 'required',
-            'operation_date' => 'required',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**
@@ -264,29 +252,16 @@ class CurrencyRecordController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateCurrencyRecordRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateCurrencyRecordRequest $request, int $id): JsonResponse
     {
-        $this->checkPermission('update');
-
-        $request->validate([
-            'company_id' => 'required|numeric',
-            'project_salary' => 'required|numeric',
-            'currency_id' => 'required|numeric',
-            'bank_rate' => 'required',
-            'tax_rate' => 'required',
-            'net' => 'required',
-            'month' => 'required',
-            'operation_date' => 'required',
-        ]);
-
         $currency_record = $this->service->readOne($id);
 
         /** @var CurrencyRecord $currency_record */
-        $currency_record = $this->service->update($currency_record, $request->toArray());
+        $currency_record = $this->service->update($currency_record, $request->validated());
 
         return response()->json($currency_record, Response::HTTP_OK);
     }

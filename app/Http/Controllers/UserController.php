@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\UserServiceInterface;
-use App\Http\Requests\CreateUserRequest;
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\Create\CreateUserRequest;
+use App\Http\Requests\Update\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -212,14 +211,10 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $login): JsonResponse
     {
-        $this->checkPermission('update');
-
-        $request->validated();
-
         $user = $this->service->readOne($login);
 
         /** @var User $user */
-        $user = $this->service->update($user, $request->safe()->toArray());
+        $user = $this->service->update($user, $request->validated());
 
         return response()->json($user, Response::HTTP_OK);
     }

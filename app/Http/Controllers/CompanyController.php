@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\CompanyServiceInterface;
+use App\Http\Requests\Create\CreateCompanyRequest;
+use App\Http\Requests\Update\UpdateCompanyRequest;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CompanyController extends Controller
@@ -89,20 +90,12 @@ class CompanyController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateCompanyRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateCompanyRequest $request): JsonResponse
     {
-        $this->checkPermission('create');
-
-        $request->validate([
-            'name' => 'required|max:255',
-            'contacts' => 'required|max:255',
-            'create_time' => 'required',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**
@@ -181,24 +174,16 @@ class CompanyController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateCompanyRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateCompanyRequest $request, int $id): JsonResponse
     {
-        $this->checkPermission('update');
-
-        $request->validate([
-            'name' => 'required|max:255',
-            'contacts' => 'required|max:255',
-            'create_time' => 'required',
-        ]);
-
         $company = $this->service->readOne($id);
 
         /** @var Company $company */
-        $company = $this->service->update($company, $request->toArray());
+        $company = $this->service->update($company, $request->validated());
 
         return response()->json($company, Response::HTTP_OK);
     }

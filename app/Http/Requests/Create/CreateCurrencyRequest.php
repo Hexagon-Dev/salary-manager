@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Create;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserRequest extends FormRequest
+class CreateCurrencyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return $this->user()->can('create');
     }
 
     /**
@@ -24,12 +24,9 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'login' => 'max:32|min:6',
-            'email' => 'max:32|min:6',
-            'password' => 'max:32|min:8',
-            'name' => 'max:255',
-            'age' => 'max:45',
-            'role' => 'max:45',
+            'name' => 'required|max:255',
+            'rate' => 'required|max:10',
+            'symbol' => 'required|max:255',
         ];
     }
 }

@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\NoteServiceInterface;
+use App\Http\Requests\Create\CreateNoteRequest;
+use App\Http\Requests\Update\UpdateNoteRequest;
 use App\Models\Note;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class NoteController extends Controller
@@ -96,21 +94,12 @@ class NoteController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateNoteRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateNoteRequest $request): JsonResponse
     {
-        $this->checkPermission('create');
-
-        $request->validate([
-            'name' => 'required|max:255',
-            'date' => 'required',
-            'manager_id' => 'required|numeric',
-            'user_id' => 'required|numeric',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**
@@ -213,25 +202,16 @@ class NoteController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateNoteRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateNoteRequest $request, int $id): JsonResponse
     {
-        $this->checkPermission('update');
-
-        $request->validate([
-            'name' => 'required|max:255',
-            'date' => 'required',
-            'manager_id' => 'required|numeric',
-            'user_id' => 'required|numeric',
-        ]);
-
         $note = $this->service->readOne($id);
 
         /** @var Note $note */
-        $note = $this->service->update($note, $request->toArray());
+        $note = $this->service->update($note, $request->validated());
 
         return response()->json($note, Response::HTTP_OK);
     }

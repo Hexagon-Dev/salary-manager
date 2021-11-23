@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\SalaryServiceInterface;
+use App\Http\Requests\Create\CreateSalaryRequest;
+use App\Http\Requests\Update\UpdateSalaryRequest;
 use App\Models\Salary;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SalaryController extends Controller
@@ -92,20 +90,12 @@ class SalaryController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateSalaryRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateSalaryRequest $request): JsonResponse
     {
-        $this->checkPermission('create');
-
-        $request->validate([
-            'amount' => 'required|numeric',
-            'currency_id' => 'required|numeric',
-            'user_id' => 'required|numeric',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**
@@ -204,24 +194,16 @@ class SalaryController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateSalaryRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateSalaryRequest $request, int $id): JsonResponse
     {
-        $this->checkPermission('update');
-
-        $request->validate([
-            'amount' => 'required|numeric',
-            'currency_id' => 'required|numeric',
-            'user_id' => 'required|numeric',
-        ]);
-
         $salary = $this->service->readOne($id);
 
         /** @var Salary $salary */
-        $salary = $this->service->update($salary, $request->toArray());
+        $salary = $this->service->update($salary, $request->validated());
 
         return response()->json($salary, Response::HTTP_OK);
     }

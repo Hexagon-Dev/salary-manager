@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Create;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateAbsenceRequest extends FormRequest
+class CreateSalaryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,8 @@ class CreateAbsenceRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'required|numeric',
+            'amount' => 'required|numeric',
+            'currency_id' => 'required|numeric',
             'user_id' => 'required|numeric',
         ];
     }

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\CurrencyServiceInterface;
+use App\Http\Requests\Create\CreateCurrencyRequest;
+use App\Http\Requests\Update\UpdateCurrencyRequest;
 use App\Models\Currency;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CurrencyController extends Controller
@@ -89,20 +90,12 @@ class CurrencyController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateCurrencyRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateCurrencyRequest $request): JsonResponse
     {
-        $this->checkPermission('create');
-
-        $request->validate([
-            'name' => 'required|max:255',
-            'rate' => 'required',
-            'symbol' => 'required|max:255',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**
@@ -201,26 +194,18 @@ class CurrencyController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateCurrencyRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateCurrencyRequest $request, int $id): JsonResponse
     {
-        $this->checkPermission('read');
-
-        $request->validate([
-            'name' => 'required|max:255',
-            'rate' => 'required',
-            'symbol' => 'required|max:255',
-        ]);
-
         if (! $currency = $this->service->readOne($id)) {
             return response()->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
         }
 
         /** @var Currency $currency */
-        $currency = $this->service->update($currency, $request->toArray());
+        $currency = $this->service->update($currency, $request->validated());
 
         return response()->json($currency, Response::HTTP_OK);
     }

@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Services\SkillServiceInterface;
+use App\Http\Requests\Create\CreateSkillRequest;
+use App\Http\Requests\Update\UpdateSkillRequest;
 use App\Models\Skill;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SkillController extends Controller
@@ -84,18 +82,12 @@ class SkillController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param CreateSkillRequest $request
      * @return JsonResponse
      */
-    public function create(Request $request): JsonResponse
+    public function create(CreateSkillRequest $request): JsonResponse
     {
-        $this->checkPermission('create');
-
-        $request->validate([
-            'name' => 'required|max:255',
-        ]);
-
-        return response()->json($this->service->create($request->toArray()), Response::HTTP_CREATED);
+        return response()->json($this->service->create($request->validated()), Response::HTTP_CREATED);
     }
 
     /**
@@ -186,22 +178,16 @@ class SkillController extends Controller
      *      )
      *     )
      *
-     * @param Request $request
+     * @param UpdateSkillRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateSkillRequest $request, int $id): JsonResponse
     {
-        $this->checkPermission('update');
-
-        $request->validate([
-            'name' => 'required|max:255',
-        ]);
-
         $skill = $this->service->readOne($id);
 
         /** @var Skill $skill */
-        $skill = $this->service->update($skill, $request->toArray());
+        $skill = $this->service->update($skill, $request->validated());
 
         return response()->json($skill, Response::HTTP_OK);
     }
