@@ -27,5 +27,5 @@ For example to allow access to update skill table, give these permissions: 'upda
 | **GET** | api/table_name | Show entries |
 | **POST** | api/table_name | Create new entry |
 | **GET** | api/table_name/{variable} | Show certain entry |
-| **PUT** | api/table_name/{variable} | Update certain entry values |
+| **PATCH** | api/table_name/{variable} | Update certain entry values |
 | **DELETE** | api/table_name/{variable} | Remove certain entry |
