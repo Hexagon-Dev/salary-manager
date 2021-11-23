@@ -2,9 +2,10 @@
 ## Installation
 *  Make sure that you have docker installed.
 *  Execute `docker-compose up`
-*  Go to `localhost` and here you are.
+*  Go to `http://localhost` and here you are.
 ## Permissions management
-PermissionSeeder creates all the permissions called by table names and permissions called: create, read, update, delete.  
+To create permissions run: `php artisan db:seed`  
+It creates permissions called by table names and permissions called create, read, update, delete.  
 Also, it creates 4 roles called: superadmin, admin, user and guest.  
 Superadmin has all permissions. Guest has no permissions.  
 For example to allow access to update skill table, give these permissions: 'update', 'skill'.
