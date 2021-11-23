@@ -1,6 +1,7 @@
 # Salary Manager
 This is CRUD system, it has permissions, roles, register, login, data validation.  
-It uses JWT to authenticate.
+It uses JWT to authenticate.  
+It has generated Swagger documentation available on `http://localhost/documentation`
 ## Installation
 *  Make sure that you have docker installed.
 *  Execute `docker-compose up`
