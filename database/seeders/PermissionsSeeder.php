@@ -81,7 +81,7 @@ class PermissionsSeeder extends Seeder
         $user = User::factory()->create([
             'login' => 'superadmin',
             'email' => 'superadmin@example.com',
-            'password' => Hash::make('superadmin'),
+            'password' => 'superadmin',
         ]);
         $user->assignRole($super_admin_role);
         $user->assignRole($all_tables_role);
@@ -89,21 +89,21 @@ class PermissionsSeeder extends Seeder
         $user = User::factory()->create([
             'login' => 'guest',
             'email' => 'guest@example.com',
-            'password' => Hash::make('guest'),
+            'password' => 'guest',
         ]);
         $user->assignRole($guest_role);
 
         $user = User::factory()->create([
             'login' => 'user',
             'email' => 'user@example.com',
-            'password' => Hash::make('user'),
+            'password' => 'user',
         ]);
         $user->assignRole($user_role);
 
         $user = User::factory()->create([
             'login' => 'admin',
             'email' => 'admin@example.com',
-            'password' => Hash::make('admin'),
+            'password' => 'admin',
         ]);
         $user->assignRole($admin_role);
     }

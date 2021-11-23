@@ -60,8 +60,6 @@ class AuthController extends Controller
         }
 
         if (Hash::check($request->validated()['password'], $user->password)) {
-            unset($user['password']);
-            cache('user-' . $user['id'], $user);
             return response()->json(['token' => $this->getJWTToken($user)]);
         }
 

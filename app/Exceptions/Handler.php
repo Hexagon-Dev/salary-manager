@@ -49,10 +49,14 @@ class Handler extends ExceptionHandler
             ], Response::HTTP_UNAUTHORIZED);
         });
         $this->renderable(function (HttpException $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+            return response()->json([
+                'error' => $e->getMessage()],
+                $e->getStatusCode());
         });
         $this->renderable(function (RoleDoesNotExist $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
         });
     }
 }
