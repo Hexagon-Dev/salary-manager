@@ -1,4 +1,6 @@
 # Salary Manager
+This is CRUD system, it has permissions, roles, register, login, data validation.  
+It uses JWT to authenticate.
 ## Installation
 *  Make sure that you have docker installed.
 *  Execute `docker-compose up`
