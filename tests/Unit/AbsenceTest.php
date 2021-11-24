@@ -117,9 +117,6 @@ class AbsenceTest extends TestCase
         /** @var Absence $absence */
         $absence = Absence::query()->create($this->absenceData);
 
-        $this->patch(route('absence-update', $absence->id), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
         $this->patch(route('absence-update', $absence->id), $this->absenceDataNew)
             ->assertOk()
             ->assertJson($this->absenceDataNew);

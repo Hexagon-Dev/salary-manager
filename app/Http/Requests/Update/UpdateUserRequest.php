@@ -30,6 +30,8 @@ class UpdateUserRequest extends FormRequest
             'name' => 'max:255',
             'age' => 'max:45',
             'role' => 'max:45',
+            'name_on_project' => 'max:45',
+            'english_lvl' => 'max:45',
         ];
     }
 }

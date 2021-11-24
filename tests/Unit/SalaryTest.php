@@ -119,9 +119,6 @@ class SalaryTest extends TestCase
         /** @var Salary $salary */
         $salary = Salary::query()->create($this->salaryData);
 
-        $this->patch(route('salary-update', $salary->id), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
         $this->patch(route('salary-update', $salary->id), $this->salaryDataNew)
             ->assertOk()
             ->assertJson($this->salaryDataNew);

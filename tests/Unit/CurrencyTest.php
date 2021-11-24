@@ -119,9 +119,6 @@ class CurrencyTest extends TestCase
         /** @var Currency $currency */
         $currency = Currency::query()->create($this->currencyData);
 
-        $this->patch(route('currency-update', $currency->id), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
         $this->patch(route('currency-update', $currency->id), $this->currencyDataNew)
             ->assertOk()
             ->assertJson($this->currencyDataNew);

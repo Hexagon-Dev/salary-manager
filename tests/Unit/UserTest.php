@@ -20,6 +20,7 @@ class UserTest extends TestCase
         'age' => '20',
         'name_on_project' => '4',
         'english_lvl' => '5',
+        'role' => 'user',
     ];
 
     protected array $userDataNew = [
@@ -49,6 +50,8 @@ class UserTest extends TestCase
         User::query()->create($this->userData);
         User::query()->create($this->userDataNew);
 
+        unset($this->userData['password'], $this->userDataNew['password']);
+
         $this->json('GET', route('user-all'))
             ->assertOk()
             ->assertJson([4 => $this->userData, 5 => $this->userDataNew]);
@@ -70,7 +73,7 @@ class UserTest extends TestCase
 
         $this->json('GET', route('user-create', $user->login))
             ->assertOk()
-            ->assertJson([4 => $this->userData]);
+            ->assertJson([4 => collect($this->userData)->except('password')->toArray()]);
 
         User::query()->truncate();
 
@@ -89,9 +92,11 @@ class UserTest extends TestCase
         $this->json('POST', route('user-create'), $this->userData)
             ->assertCreated();
 
+        unset($this->userData['password'], $this->userData['role']);
+
         $this->json('GET', route('user-one', 'test_name'))
             ->assertOk()
-            ->assertJson(collect($this->userData)->except('password')->toArray());
+            ->assertJson($this->userData);
     }
 
     /**
@@ -126,8 +131,7 @@ class UserTest extends TestCase
         /** @var User $user */
         $user = User::query()->create($this->userData);
 
-        $this->patch(route('user-update', $user->login), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        unset($this->userDataNew['password']);
 
         $this->patch(route('user-update', $user->login), $this->userDataNew)
             ->assertOk()

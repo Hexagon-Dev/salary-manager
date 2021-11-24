@@ -115,9 +115,6 @@ class SkillTest extends TestCase
         /** @var Skill $skill */
         $skill = Skill::query()->create($this->skillData);
 
-        $this->patch(route('skill-update', $skill->id), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
         $this->patch(route('skill-update', $skill->id), $this->skillDataNew)
             ->assertOk()
             ->assertJson($this->skillDataNew);

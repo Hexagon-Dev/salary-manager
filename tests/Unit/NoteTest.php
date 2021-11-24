@@ -121,9 +121,6 @@ class NoteTest extends TestCase
         /** @var Note $note */
         $note = Note::query()->create($this->noteData);
 
-        $this->patch(route('note-update', $note->id), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
         $this->patch(route('note-update', $note->id), $this->noteDataNew)
             ->assertOk()
             ->assertJson($this->noteDataNew);

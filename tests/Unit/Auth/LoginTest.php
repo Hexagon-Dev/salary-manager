@@ -11,16 +11,14 @@ class LoginTest extends TestCase
      */
     public function loginAsSuperAdmin(): void
     {
-        $response = $this->post('/api/auth/login', [
-            'email' => 'superadmin@example.com',
+        $response = $this->post('/api/login', [
+            'login' => 'superadmin',
             'password' => 'superadmin'
         ]);
 
         $response
             ->assertStatus(200)
-            ->assertJsonStructure([
-                'access_token', 'token_type', 'expires_in'
-            ]);
+            ->assertJsonStructure(['token']);
     }
 
     /**
@@ -28,16 +26,14 @@ class LoginTest extends TestCase
      */
     public function loginAsAdmin(): void
     {
-        $response = $this->post('/api/auth/login', [
-            'email' => 'admin@example.com',
+        $response = $this->post('/api/login', [
+            'login' => 'admin',
             'password' => 'admin'
         ]);
 
         $response
             ->assertStatus(200)
-            ->assertJsonStructure([
-                'access_token', 'token_type', 'expires_in'
-            ]);
+            ->assertJsonStructure(['token']);
     }
 
     /**
@@ -45,16 +41,14 @@ class LoginTest extends TestCase
      */
     public function loginAsUser(): void
     {
-        $response = $this->post('/api/auth/login', [
-            'email' => 'user@example.com',
+        $response = $this->post('/api/login', [
+            'login' => 'user',
             'password' => 'user'
         ]);
 
         $response
             ->assertStatus(200)
-            ->assertJsonStructure([
-                'access_token', 'token_type', 'expires_in'
-            ]);
+            ->assertJsonStructure(['token']);
     }
 
     /**
@@ -62,15 +56,13 @@ class LoginTest extends TestCase
      */
     public function loginAsGuest(): void
     {
-        $response = $this->post('/api/auth/login', [
-            'email' => 'guest@example.com',
+        $response = $this->post('/api/login', [
+            'login' => 'guest',
             'password' => 'guest'
         ]);
 
         $response
             ->assertStatus(200)
-            ->assertJsonStructure([
-                'access_token', 'token_type', 'expires_in'
-            ]);
+            ->assertJsonStructure(['token']);
     }
 }

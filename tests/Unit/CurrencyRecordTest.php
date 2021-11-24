@@ -129,9 +129,6 @@ class CurrencyRecordTest extends TestCase
         /** @var CurrencyRecord $currency_record */
         $currency_record = CurrencyRecord::query()->create($this->currency_recordData);
 
-        $this->patch(route('currency_record-update', $currency_record->id), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
         $this->patch(route('currency_record-update', $currency_record->id), $this->currency_recordDataNew)
             ->assertOk()
             ->assertJson($this->currency_recordDataNew);

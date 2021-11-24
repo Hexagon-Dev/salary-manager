@@ -129,9 +129,6 @@ class CompanyTest extends TestCase
         /** @var Company $company */
         $company = Company::query()->create($this->companyData);
 
-        $this->patch(route('company-update', $company->id), [])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
         $this->patch(route('company-update', $company->id), $this->companyDataNew)
             ->assertOk()
             ->assertJson($this->companyDataNew);
